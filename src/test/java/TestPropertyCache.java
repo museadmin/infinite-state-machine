@@ -1,24 +1,29 @@
-import junit.framework.*;
-
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestPropertyCache extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+
+public class TestPropertyCache {
 
   protected PropertyCache propertyCache;
 
-  protected void setUp(){
-    propertyCache = new PropertyCache("target/classes/environment.properties");
+  @Before
+  public void setUp(){
+    propertyCache = new PropertyCache("environment.properties");
   }
 
+  @Test
   public void testCacheGetsValueForKey() {
     assertEquals("sqlite3", propertyCache.getProperty("rdbms"));
   }
-
+  @Test
   public void testCacheGetsDefaultValueForUnknownKey() {
     assertEquals("default",
         propertyCache.getProperty("xdbms", "default"));
   }
-
+  @Test
   public void testCacheDoesNotGetDefaultValueForKnownKey() {
     assertEquals("sqlite3",
         propertyCache.getProperty("rdbms", "default"));

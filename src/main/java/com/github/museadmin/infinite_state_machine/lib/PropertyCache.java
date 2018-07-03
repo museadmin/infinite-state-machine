@@ -1,8 +1,6 @@
 package com.github.museadmin.infinite_state_machine.lib;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -18,31 +16,12 @@ public class PropertyCache {
    * @param file The path to the properties file.
    */
   public PropertyCache(String file) {
-
-    InputStream input = null;
-
-    try {
-
-      input = new FileInputStream(file);
-
-      // load a properties file
-      prop.load(input);
-
-      // get the property value and print it out
-      System.out.println(prop.getProperty("database"));
-      System.out.println(prop.getProperty("dbuser"));
-      System.out.println(prop.getProperty("dbpassword"));
-
-    } catch (IOException ex) {
-      ex.printStackTrace();
-    } finally {
-      if (input != null) {
-        try {
-          input.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
+    try
+    {
+      prop.load(ClassLoader.getSystemResourceAsStream(file));
+    } catch (IOException e)
+    {
+      e.printStackTrace();
     }
   }
 
