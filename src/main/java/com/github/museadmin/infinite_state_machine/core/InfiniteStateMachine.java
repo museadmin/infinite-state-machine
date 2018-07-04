@@ -37,6 +37,7 @@ public class InfiniteStateMachine {
             File dir = new File (dbPath);
             if (! dir.isDirectory()) { dir.mkdirs(); }
             dbFile = dbPath + File.separator + "ism.db";
+
             // Create the database itself
             iDataAccessLayer = new Sqlite3(dbFile);
         } else if (rdbms.equalsIgnoreCase("POSTGRES")) {

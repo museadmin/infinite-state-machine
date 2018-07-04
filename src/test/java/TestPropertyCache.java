@@ -2,6 +2,7 @@ import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
 import org.junit.Before;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 
@@ -16,7 +17,8 @@ public class TestPropertyCache {
 
   @Test
   public void testCacheGetsValueForKey() {
-    assertEquals("sqlite3", propertyCache.getProperty("rdbms"));
+    assertTrue(propertyCache.getProperty("rdbms").equalsIgnoreCase("sqlite3") ||
+        propertyCache.getProperty("rdbms").equalsIgnoreCase("postgres"));
   }
   @Test
   public void testCacheGetsDefaultValueForUnknownKey() {
@@ -25,7 +27,7 @@ public class TestPropertyCache {
   }
   @Test
   public void testCacheDoesNotGetDefaultValueForKnownKey() {
-    assertEquals("sqlite3",
-        propertyCache.getProperty("rdbms", "default"));
+    assertTrue(propertyCache.getProperty("rdbms", "default").equalsIgnoreCase("sqlite3") ||
+        propertyCache.getProperty("rdbms", "default").equalsIgnoreCase("postgres"));
   }
 }
