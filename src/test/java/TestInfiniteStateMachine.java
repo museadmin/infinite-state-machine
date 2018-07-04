@@ -2,7 +2,7 @@ import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 public class TestInfiniteStateMachine {
 
@@ -14,6 +14,7 @@ public class TestInfiniteStateMachine {
     }
     @Test
     public void testInfiniteStateMachineReadsRdbms() {
-        assertEquals("sqlite3", infiniteStateMachine.getRdbms());
+        assertTrue(infiniteStateMachine.getRdbms().equalsIgnoreCase("sqlite3") ||
+            infiniteStateMachine.getRdbms().equalsIgnoreCase("postgres"));
     }
 }

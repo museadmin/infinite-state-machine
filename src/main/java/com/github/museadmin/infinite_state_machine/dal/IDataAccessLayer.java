@@ -1,5 +1,7 @@
 package com.github.museadmin.infinite_state_machine.dal;
 
 public interface IDataAccessLayer {
-    boolean createDatabase(String database);
+    void createDatabase(String database);
+    void createTables();
+    Boolean executeSqlStatement(String sql);
 }
