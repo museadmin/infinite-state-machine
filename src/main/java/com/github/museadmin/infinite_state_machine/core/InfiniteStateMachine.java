@@ -4,8 +4,14 @@ import com.github.museadmin.infinite_state_machine.dal.IDataAccessLayer;
 import com.github.museadmin.infinite_state_machine.dal.Postgres;
 import com.github.museadmin.infinite_state_machine.dal.Sqlite3;
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 
 /**
  * The primary parent object that contains all of the components
@@ -18,18 +24,18 @@ public class InfiniteStateMachine {
     private PropertyCache propertyCache = new PropertyCache("environment.properties");
     private String rdbms;
     private String runRoot;
-    private IDataAccessLayer iDataAccessLayer;
-
-    public String getRdbms() {
-        return rdbms;
-    }
+    private IDataAccessLayer iDataAccessLayer = null;
 
     public InfiniteStateMachine() {
         rdbms = propertyCache.getProperty("rdbms");
         createRuntimeDirectories();
         createDatabase();
+        createDefaultTables();
     }
 
+    /**
+     * Create a unique database instance for the run
+     */
     private void createDatabase() {
         if (rdbms.equalsIgnoreCase("SQLITE3")) {
             // Create the runtime dir for the sqlite3 db
@@ -48,11 +54,53 @@ public class InfiniteStateMachine {
 
     }
 
+    /**
+     * Create the default tables in the database used by the state machine core
+     * Table definitions are read in from the json files and passed to the DAO
+     */
+    private void createDefaultTables() {
+
+        String[] files = { "tblState.json", "tblStateMachine.json", "tblProperties.json", "tblDependencies.json" };
+        for (String file : files) {
+            iDataAccessLayer.createTable(getTableDefinitionFromResourceDir(file));
+        }
+    }
+
+    /**
+     * Each run needs its own distinct run directory structure created
+     */
     private void createRuntimeDirectories() {
-        // The root directory for the run
         runRoot = propertyCache.getProperty("runRoot") + File.separator +
             epochSeconds + File.separator;
         File root = new File(runRoot);
         if (! root.isDirectory()) { root.mkdirs(); }
+    }
+
+    /**
+     * Returns a JSONObject populated from a JSON file in the resources directory
+     * @param jsonFileName String representing the unqualified file name
+     * @return JSONObject
+     */
+    private JSONObject getTableDefinitionFromResourceDir(String jsonFileName) {
+
+        InputStream is = ClassLoader.getSystemResourceAsStream(jsonFileName);
+        InputStreamReader isr;
+        BufferedReader br;
+        StringBuilder sb = new StringBuilder();
+        String content;
+        try {
+            isr = new InputStreamReader(is);
+            br = new BufferedReader(isr);
+            while ((content = br.readLine()) != null) {
+                sb.append(content);
+            }
+            isr.close();
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(1);
+        }
+        return new JSONObject(sb.toString());
     }
 }

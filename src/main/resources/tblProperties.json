@@ -1,0 +1,21 @@
+{
+  "table_name" : "properties",
+  "columns" : [
+    {
+      "primary_key" : true,
+      "not_null" : true,
+      "name" : "property",
+      "type" : "CHAR",
+      "default" : "",
+      "comment" : "A property"
+    },
+    {
+      "primary_key" : false,
+      "not_null" : false,
+      "name" : "value",
+      "type" : "CHAR",
+      "default" : "",
+      "comment" : "The value of the property"
+    }
+  ]
+}

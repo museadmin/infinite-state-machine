@@ -13,7 +13,7 @@ public class PropertyCache {
   /**
    * Reads the values in a properties file and caches them for later retrieval.
    *
-   * @param file The path to the properties file.
+   * @param file The name of the properties file.
    */
   public PropertyCache(String file) {
     try

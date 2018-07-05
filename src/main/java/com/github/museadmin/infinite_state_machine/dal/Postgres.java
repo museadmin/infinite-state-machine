@@ -1,6 +1,7 @@
 package com.github.museadmin.infinite_state_machine.dal;
 
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
+import org.json.JSONObject;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,9 +26,12 @@ public class Postgres implements IDataAccessLayer {
         dbData.put("dbUser", propertyCache.getProperty("dbUser"));
 
         createDatabase(dbData.get("dbName").toString());
-        createTables();
     }
 
+    /**
+     * Create a unique database instance for the run
+     * @param database Name of the DB
+     */
     public void createDatabase(String database) {
 
         try {
@@ -41,7 +45,11 @@ public class Postgres implements IDataAccessLayer {
         }
     }
 
-    public void createTables(){
+    /**
+     * Create a database table using a JSON definition
+     * @param table JSONObject
+     */
+    public void createTable(JSONObject table){
 
         executeSqlStatement(
             "CREATE TABLE state (" +
@@ -90,6 +98,11 @@ public class Postgres implements IDataAccessLayer {
 
     }
 
+    /**
+     * Executes a SQL statement
+     * @param sql The statement to execute
+     * @return True or False for success or failure
+     */
     public Boolean executeSqlStatement(String sql)  {
         Boolean rc = false;
         try {
@@ -104,6 +117,11 @@ public class Postgres implements IDataAccessLayer {
         return rc;
     }
 
+    /**
+     * Return a connection to the postgres database
+     * @param database Database Name
+     * @return Connection
+     */
     private Connection getConnection(String database) {
         Connection connection = null;
         try {
@@ -118,6 +136,11 @@ public class Postgres implements IDataAccessLayer {
         return connection;
     }
 
+    /**
+     * Return a member of the dbData hash
+     * @param key Hash ke
+     * @return String Value
+     */
     private String getDbData(String key) {
         return dbData.get(key).toString();
     }

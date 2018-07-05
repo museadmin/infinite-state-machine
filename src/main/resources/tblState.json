@@ -1,0 +1,37 @@
+{
+  "table_name" : "state",
+  "columns" : [
+    {
+      "primary_key" : true,
+      "not_null" : true ,
+      "name" : "state_id",
+      "type" : "INTEGER",
+      "default" : "",
+      "comment" : ""
+    },
+    {
+      "primary_key" : false,
+      "not_null" : false,
+      "name" : "status",
+      "type" : "INTEGER",
+      "default" : "1",
+      "comment" : "True 1 or False 0"
+    },
+    {
+      "primary_key" : false,
+      "not_null" : true,
+      "name" : "state_flag",
+      "type" : "CHAR",
+      "default" : "",
+      "comment" : "Textual flag"
+    },
+    {
+      "primary_key" : false,
+      "not_null" : false,
+      "name" : "note",
+      "type" : "CHAR",
+      "default" : "",
+      "comment" : "Note explaining what this state is for"
+    }
+  ]
+}

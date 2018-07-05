@@ -1,0 +1,45 @@
+{
+  "table_name" : "state_machine",
+  "columns" : [
+    {
+      "primary_key" : true,
+      "not_null" : true,
+      "name" : "state_machine_id",
+      "type" : "INTEGER",
+      "default" : "",
+      "comment" : ""
+    },
+    {
+      "primary_key" : false,
+      "not_null" : false,
+      "name" : "action",
+      "type" : "CHAR",
+      "default" : "",
+      "comment" : "The textual name. e.g. PROCESS_NORMAL_SHUTDOWN"
+    },
+    {
+      "primary_key" : false,
+      "not_null" : true,
+      "name" : "phase",
+      "type" : "CHAR",
+      "default" : "STARTUP",
+      "comment" : "The run phase"
+    },
+    {
+      "primary_key" : false,
+      "not_null" : false,
+      "name" : "payload",
+      "type" : "CHAR",
+      "default" : "",
+      "comment" : "Any payload sent via msg for action"
+    },
+    {
+      "primary_key" : false,
+      "not_null" : true,
+      "name" : "activation",
+      "type" : "INTEGER",
+      "default" : "0",
+      "comment" : "The activation. ACT = 1 or SKIP = 0"
+    }
+  ]
+}
