@@ -76,6 +76,11 @@ public class Sqlite3 implements IDataAccessLayer {
         return connection;
     }
 
+    /**
+     * SQLite3 context aware CREATE TABLE statement builder
+     * @param table JSONObject created from JSON defintion file
+     * @return The SQL as a string
+     */
     private String createTableStatement(JSONObject table) {
 
         StringBuilder sbSql = new StringBuilder(100);

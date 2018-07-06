@@ -1,21 +1,25 @@
 package com.github.museadmin.infinite_state_machine.dal;
 
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Data Access Layer for when using Postgres
+ * Data Access Object for when using Postgres
  */
 public class Postgres implements IDataAccessLayer {
 
     private Map dbData = new HashMap<String, String>();
+    private List<String> comments = new ArrayList<>();
 
     public Postgres(PropertyCache propertyCache, String epochSeconds) {
 
@@ -50,52 +54,9 @@ public class Postgres implements IDataAccessLayer {
      * @param table JSONObject
      */
     public void createTable(JSONObject table){
-
-        executeSqlStatement(
-            "CREATE TABLE state (" +
-                "       state_id INTEGER PRIMARY KEY,\n" +
-                "        status INTEGER DEFAULT 1,\n" +
-                "         state_flag CHAR NOT NULL,\n" +
-                "          note CHAR \n" +
-                "      );"
-        );
-        executeSqlStatement("COMMENT ON COLUMN state.status is 'True (1) or False (0)';");
-        executeSqlStatement("COMMENT ON COLUMN state.state_flag is 'Textual flag';");
-        executeSqlStatement("COMMENT ON COLUMN state.note is 'Comment explaining what this state is for';");
-
-        executeSqlStatement(
-            "CREATE TABLE state_machine (\n" +
-                "        state_machine_id INTEGER PRIMARY KEY,\n" +
-                "        action CHAR,\n" +
-                "        phase CHAR DEFAULT 'STARTUP',\n" +
-                "        payload CHAR,\n" +
-                "        activation INTEGER DEFAULT 0\n" +
-                "      );"
-        );
-        executeSqlStatement("COMMENT ON COLUMN state_machine.action is 'The textual name. e.g. PROCESS_NORMAL_SHUTDOWN';");
-        executeSqlStatement("COMMENT ON COLUMN state_machine.phase is 'The run phase';");
-        executeSqlStatement("COMMENT ON COLUMN state_machine.payload is 'Any payload for the action';");
-        executeSqlStatement("COMMENT ON COLUMN state_machine.activation is 'The activation. ACT = 1 or SKIP = 0';");
-
-        executeSqlStatement(
-            "CREATE TABLE properties (\n" +
-                "        property CHAR PRIMARY KEY,\n" +
-                "        value CHAR\n" +
-                "      );"
-        );
-        executeSqlStatement("COMMENT ON COLUMN properties.property is 'A property';");
-        executeSqlStatement("COMMENT ON COLUMN properties.value is 'The value of the property';");
-
-        executeSqlStatement(
-            "CREATE TABLE dependencies (\n" +
-                "        dependency_id INTEGER PRIMARY KEY,\n" +
-                "        dependency CHAR,\n" +
-                "        version CHAR\n" +
-                "      );"
-        );
-        executeSqlStatement("COMMENT ON COLUMN dependencies.dependency is 'Name of the dependency';");
-        executeSqlStatement("COMMENT ON COLUMN dependencies.version is 'Version number of the dependency';");
-
+        executeSqlStatement(createTableStatement(table));
+        comments.forEach(comment -> executeSqlStatement(comment));
+        comments.clear();
     }
 
     /**
@@ -143,5 +104,58 @@ public class Postgres implements IDataAccessLayer {
      */
     private String getDbData(String key) {
         return dbData.get(key).toString();
+    }
+
+    /**
+     * SQLite3 context aware CREATE TABLE statement builder
+     * @param table JSONObject created from JSON defintion file
+     * @return The SQL as a string
+     */
+    private String createTableStatement(JSONObject table) {
+
+        StringBuilder sbSql = new StringBuilder(100);
+        sbSql.append("CREATE TABLE ");
+        sbSql.append(table.get("table_name"));
+        sbSql.append(" (");
+
+        JSONArray columns = table.getJSONArray("columns");
+
+        columns.forEach(column -> {
+            JSONObject col = (JSONObject) column;
+
+            sbSql.append(col.getString("name"));
+            sbSql.append(" " + col.getString("type"));
+
+            if (col.getBoolean("not_null")) {
+                sbSql.append(" NOT NULL");
+            }
+
+            String def = col.getString("default");
+            if (! def.isEmpty()) {
+                sbSql.append(" DEFAULT '" + def + "'");
+            }
+
+            if (col.getBoolean("primary_key")) {
+                sbSql.append(" PRIMARY KEY");
+            }
+
+            sbSql.append(", ");
+
+            String comment = col.getString("comment");
+            if (! comment.isEmpty()) { comments.add("COMMENT ON COLUMN " +
+                    table.get("table_name") + "." +
+                    col.getString("name") + " is '" +
+                    comment + "';"
+                );
+            }
+        });
+
+        sbSql.append(");");
+
+        String sql = sbSql.toString();
+        int index = sql.lastIndexOf(',');
+        sbSql.deleteCharAt(index);
+
+        return sbSql.toString();
     }
 }

@@ -62,7 +62,7 @@ public class InfiniteStateMachine {
 
         String[] files = { "tblState.json", "tblStateMachine.json", "tblProperties.json", "tblDependencies.json" };
         for (String file : files) {
-            iDataAccessLayer.createTable(getTableDefinitionFromResourceDir(file));
+            iDataAccessLayer.createTable(getTableDefinitionFromResource(file));
         }
     }
 
@@ -81,7 +81,7 @@ public class InfiniteStateMachine {
      * @param jsonFileName String representing the unqualified file name
      * @return JSONObject
      */
-    private JSONObject getTableDefinitionFromResourceDir(String jsonFileName) {
+    private JSONObject getTableDefinitionFromResource(String jsonFileName) {
 
         InputStream is = ClassLoader.getSystemResourceAsStream(jsonFileName);
         InputStreamReader isr;
