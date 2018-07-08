@@ -46,17 +46,17 @@ public class Sqlite3 implements IDataAccessLayer {
      * @return True or False for success or failure
      */
     public Boolean executeSqlStatement(String sql)  {
-        Boolean rc = false;
-        try {
-            Connection connection = getConnection(database);
-            Statement statement = connection.createStatement();
-            rc = statement.execute(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(1);
-        }
-        return rc;
+    Boolean rc = false;
+    try {
+        Connection connection = getConnection(database);
+        Statement statement = connection.createStatement();
+        rc = statement.execute(sql);
+    } catch (SQLException e) {
+        e.printStackTrace();
+        System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        System.exit(1);
+    }
+    return rc;
     }
 
     /**

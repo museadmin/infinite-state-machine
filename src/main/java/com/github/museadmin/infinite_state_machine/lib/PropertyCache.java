@@ -1,5 +1,7 @@
 package com.github.museadmin.infinite_state_machine.lib;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -19,8 +21,22 @@ public class PropertyCache {
     try
     {
       prop.load(ClassLoader.getSystemResourceAsStream(file));
-    } catch (IOException e)
-    {
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Import properties from an external file
+   * @param file Fully qualified path to file
+   */
+  public void importProperties(String file) {
+    try {
+      FileInputStream input = new FileInputStream(file);
+      prop.load(input);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }

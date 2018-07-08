@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
 
 /**
@@ -19,88 +20,100 @@ import java.io.InputStreamReader;
  */
 public class InfiniteStateMachine {
 
-    private String dbFile;
-    private String epochSeconds = Long.toString(System.currentTimeMillis()/1000);
-    private PropertyCache propertyCache = new PropertyCache("environment.properties");
-    private String rdbms;
-    private String runRoot;
-    private IDataAccessLayer iDataAccessLayer = null;
+  private String dbFile;
+  private String epochSeconds = Long.toString(System.currentTimeMillis());
+  private PropertyCache propertyCache = new PropertyCache("environment.properties");
 
-    public InfiniteStateMachine() {
-        rdbms = propertyCache.getProperty("rdbms");
-        createRuntimeDirectories();
-        createDatabase();
-        createDefaultTables();
+  public String getRdbms() {
+    return rdbms;
+  }
+
+  private String rdbms;
+  private String runRoot;
+  private IDataAccessLayer iDataAccessLayer = null;
+
+  public InfiniteStateMachine() {
+    rdbms = propertyCache.getProperty("rdbms");
+    createRuntimeDirectories();
+    createDatabase();
+    createDefaultTables();
+  }
+
+  public InfiniteStateMachine(String propertiesFile){
+    propertyCache.importProperties(propertiesFile);
+    rdbms = propertyCache.getProperty("rdbms");
+    createRuntimeDirectories();
+    createDatabase();
+    createDefaultTables();
+  }
+
+  /**
+   * Create a unique database instance for the run
+   */
+  private void createDatabase() {
+    if (rdbms.equalsIgnoreCase("SQLITE3")) {
+      // Create the runtime dir for the sqlite3 db
+      String dbPath = runRoot + "control" + File.separator + "database";
+      File dir = new File (dbPath);
+      if (! dir.isDirectory()) { dir.mkdirs(); }
+      dbFile = dbPath + File.separator + "ism.db";
+
+      // Create the database itself
+      iDataAccessLayer = new Sqlite3(dbFile);
+    } else if (rdbms.equalsIgnoreCase("POSTGRES")) {
+      iDataAccessLayer = new Postgres(propertyCache, epochSeconds);
+    } else {
+      throw new RuntimeException("Failed to identify RDBMS in use from property file");
     }
+  }
 
-    /**
-     * Create a unique database instance for the run
-     */
-    private void createDatabase() {
-        if (rdbms.equalsIgnoreCase("SQLITE3")) {
-            // Create the runtime dir for the sqlite3 db
-            String dbPath = runRoot + "control" + File.separator + "database";
-            File dir = new File (dbPath);
-            if (! dir.isDirectory()) { dir.mkdirs(); }
-            dbFile = dbPath + File.separator + "ism.db";
+  /**
+   * Create the default tables in the database used by the state machine core
+   * Table definitions are read in from the json files and passed to the DAO
+   */
+  private void createDefaultTables() {
 
-            // Create the database itself
-            iDataAccessLayer = new Sqlite3(dbFile);
-        } else if (rdbms.equalsIgnoreCase("POSTGRES")) {
-            iDataAccessLayer = new Postgres(propertyCache, epochSeconds);
-        } else {
-            throw new RuntimeException("Failed to identify RDBMS in use from property file");
-        }
-
+    String[] files = { "tblState.json", "tblStateMachine.json", "tblProperties.json", "tblDependencies.json" };
+    for (String file : files) {
+      iDataAccessLayer.createTable(getTableDefinitionFromResource(file));
     }
+  }
 
-    /**
-     * Create the default tables in the database used by the state machine core
-     * Table definitions are read in from the json files and passed to the DAO
-     */
-    private void createDefaultTables() {
+  /**
+   * Each run needs its own distinct run directory structure created
+   */
+  private void createRuntimeDirectories() {
+    runRoot = propertyCache.getProperty("runRoot") + File.separator +
+      epochSeconds + File.separator;
+    File root = new File(runRoot);
+    if (! root.isDirectory()) { root.mkdirs(); }
+  }
 
-        String[] files = { "tblState.json", "tblStateMachine.json", "tblProperties.json", "tblDependencies.json" };
-        for (String file : files) {
-            iDataAccessLayer.createTable(getTableDefinitionFromResource(file));
-        }
+  /**
+   * Returns a JSONObject populated from a JSON file in the resources directory
+   * @param jsonFileName String representing the unqualified file name
+   * @return JSONObject
+   */
+  private JSONObject getTableDefinitionFromResource(String jsonFileName) {
+
+    InputStream is = ClassLoader.getSystemResourceAsStream(jsonFileName);
+    InputStreamReader isr;
+    BufferedReader br;
+    StringBuilder sb = new StringBuilder();
+    String content;
+    try {
+      isr = new InputStreamReader(is);
+      br = new BufferedReader(isr);
+      while ((content = br.readLine()) != null) {
+          sb.append(content);
+      }
+      isr.close();
+      br.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println(e.getClass().getName() + ": " + e.getMessage());
+      System.exit(1);
     }
-
-    /**
-     * Each run needs its own distinct run directory structure created
-     */
-    private void createRuntimeDirectories() {
-        runRoot = propertyCache.getProperty("runRoot") + File.separator +
-            epochSeconds + File.separator;
-        File root = new File(runRoot);
-        if (! root.isDirectory()) { root.mkdirs(); }
-    }
-
-    /**
-     * Returns a JSONObject populated from a JSON file in the resources directory
-     * @param jsonFileName String representing the unqualified file name
-     * @return JSONObject
-     */
-    private JSONObject getTableDefinitionFromResource(String jsonFileName) {
-
-        InputStream is = ClassLoader.getSystemResourceAsStream(jsonFileName);
-        InputStreamReader isr;
-        BufferedReader br;
-        StringBuilder sb = new StringBuilder();
-        String content;
-        try {
-            isr = new InputStreamReader(is);
-            br = new BufferedReader(isr);
-            while ((content = br.readLine()) != null) {
-                sb.append(content);
-            }
-            isr.close();
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(1);
-        }
-        return new JSONObject(sb.toString());
-    }
+    return new JSONObject(sb.toString());
+  }
 }
