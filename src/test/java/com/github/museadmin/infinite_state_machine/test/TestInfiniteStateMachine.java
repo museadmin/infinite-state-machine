@@ -3,7 +3,9 @@ package com.github.museadmin.infinite_state_machine.test;
 import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +17,9 @@ public class TestInfiniteStateMachine {
 
   protected InfiniteStateMachine infiniteStateMachine;
   protected File file;
+
+  @Rule
+  public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   @Before
   public void setup() {
@@ -38,9 +43,9 @@ public class TestInfiniteStateMachine {
   @Test
   public void testInfiniteStateMachineImportsProperties() {
     try {
-      file = File.createTempFile("test", ".properties");
-      String tmpProps = file.getAbsolutePath();
-      CommonSupportMethods.createTmpPropertiesFile(tmpProps);
+      String tmpProps = tmpFolder.newFile("test.properties").getAbsolutePath();
+      String tmpDir = tmpFolder.getRoot().getAbsolutePath();
+      CommonSupportMethods.createTmpPropertiesFile(tmpProps, tmpDir);
 
       InfiniteStateMachine ism = new InfiniteStateMachine(tmpProps);
       assertEquals(ism.getRdbms(), "sqlite3");

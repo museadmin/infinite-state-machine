@@ -2,7 +2,9 @@ package com.github.museadmin.infinite_state_machine.test;
 
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +15,9 @@ import static org.junit.Assert.assertEquals;
 public class TestPropertyCache {
 
   protected PropertyCache propertyCache;
+
+  @Rule
+  public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   @Before
   public void setUp(){
@@ -37,16 +42,12 @@ public class TestPropertyCache {
   @Test
   public void testImportPropertiesOverridesDefaults() {
     try {
-      File f = File.createTempFile("test", ".properties");
-      String tmpProps = f.getAbsolutePath();
-      CommonSupportMethods.createTmpPropertiesFile(tmpProps);
+      String tmpProps = tmpFolder.newFile("test.properties").getAbsolutePath();
+      String tmpDir = tmpFolder.getRoot().getAbsolutePath();
+      CommonSupportMethods.createTmpPropertiesFile(tmpProps, tmpDir);
 
       propertyCache.importProperties(tmpProps);
       assertEquals(propertyCache.getProperty("rdbms"), "sqlite3");
-
-      if(f.exists() && !f.isDirectory()) {
-        f.delete();
-      }
     } catch (IOException e) {
       e.printStackTrace();
     }

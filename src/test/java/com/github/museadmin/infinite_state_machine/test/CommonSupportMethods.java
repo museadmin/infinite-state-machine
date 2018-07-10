@@ -11,15 +11,14 @@ public class CommonSupportMethods {
    * Create a one off test properties file
    * @param file
    */
-  public static void createTmpPropertiesFile(String file) {
+  public static void createTmpPropertiesFile(String file, String tmpDir) {
 
-    // TODO Make this portable
     FileOutputStream output = null;
     try {
       output = new FileOutputStream(file);
       Properties prop = new Properties();
       prop.setProperty("rdbms", "sqlite3");
-      prop.setProperty("runRoot", "/Users/atkinsb/infinite_state_machine_root");
+      prop.setProperty("runRoot", tmpDir);
       prop.store(output,null);
     } catch (FileNotFoundException e) {
       e.printStackTrace();
