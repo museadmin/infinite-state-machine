@@ -1,12 +1,14 @@
 package com.github.museadmin.infinite_state_machine.test.common;
 
 import org.junit.rules.TemporaryFolder;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Any common support methods applicable to the unit tests
+ */
 public class CommonSupportMethods {
 
   /**
