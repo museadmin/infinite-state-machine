@@ -1,4 +1,4 @@
-package com.github.museadmin.infinite_state_machine.test;
+package com.github.museadmin.infinite_state_machine.test.common;
 
 import org.junit.rules.TemporaryFolder;
 

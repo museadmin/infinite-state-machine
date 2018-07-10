@@ -1,6 +1,7 @@
-package com.github.museadmin.infinite_state_machine.test;
+package com.github.museadmin.infinite_state_machine.test.core;
 
 import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
+import com.github.museadmin.infinite_state_machine.test.common.CommonSupportMethods;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

@@ -1,13 +1,11 @@
-package com.github.museadmin.infinite_state_machine.test;
+package com.github.museadmin.infinite_state_machine.test.core;
 
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
+import com.github.museadmin.infinite_state_machine.test.common.CommonSupportMethods;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;

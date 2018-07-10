@@ -5,14 +5,14 @@ import com.github.museadmin.infinite_state_machine.dal.Postgres;
 import com.github.museadmin.infinite_state_machine.dal.Sqlite3;
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Properties;
-
 
 /**
  * The primary parent object that contains all of the components
@@ -23,6 +23,7 @@ public class InfiniteStateMachine {
   private String dbFile;
   private String epochSeconds = Long.toString(System.currentTimeMillis());
   private PropertyCache propertyCache = new PropertyCache("environment.properties");
+  private static final Logger LOGGER = LoggerFactory.getLogger(InfiniteStateMachine.class.getName());
 
   public String getRdbms() {
     return rdbms;
@@ -110,10 +111,10 @@ public class InfiniteStateMachine {
       isr.close();
       br.close();
     } catch (IOException e) {
-      e.printStackTrace();
-      System.err.println(e.getClass().getName() + ": " + e.getMessage());
+      LOGGER.error(e.getClass().getName() + ": " + e.getMessage());
       System.exit(1);
     }
     return new JSONObject(sb.toString());
   }
+
 }

@@ -1,5 +1,7 @@
 package com.github.museadmin.infinite_state_machine.lib;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.util.Properties;
 public class PropertyCache {
 
   private Properties prop = new Properties();
+  private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class.getName());
 
   /**
    * Reads the values in a properties file and caches them for later retrieval.
@@ -22,7 +25,8 @@ public class PropertyCache {
     {
       prop.load(ClassLoader.getSystemResourceAsStream(file));
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getClass().getName() + ": " + e.getMessage());
+      System.exit(1);
     }
   }
 
@@ -37,7 +41,8 @@ public class PropertyCache {
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getClass().getName() + ": " + e.getMessage());
+      System.exit(1);
     }
   }
 
