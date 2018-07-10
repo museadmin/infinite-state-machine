@@ -1,5 +1,7 @@
 package com.github.museadmin.infinite_state_machine.test;
 
+import org.junit.rules.TemporaryFolder;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,15 +13,20 @@ public class CommonSupportMethods {
    * Create a one off test properties file
    * @param file
    */
-  public static void createTmpPropertiesFile(String file, String tmpDir) {
+  public static String createTmpPropertiesFile(TemporaryFolder tmpFolder) {
 
     FileOutputStream output = null;
+    String tmpProps = null;
     try {
-      output = new FileOutputStream(file);
+      tmpProps = tmpFolder.newFile("test.properties").getAbsolutePath();
+      String tmpDir = tmpFolder.getRoot().getAbsolutePath();
+
+      output = new FileOutputStream(tmpProps);
       Properties prop = new Properties();
       prop.setProperty("rdbms", "sqlite3");
       prop.setProperty("runRoot", tmpDir);
       prop.store(output,null);
+
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -33,5 +40,6 @@ public class CommonSupportMethods {
         }
       }
     }
+    return tmpProps;
   }
 }

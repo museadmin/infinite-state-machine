@@ -6,17 +6,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 public class TestInfiniteStateMachine {
 
   protected InfiniteStateMachine infiniteStateMachine;
-  protected File file;
 
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
@@ -29,9 +24,6 @@ public class TestInfiniteStateMachine {
   @After
   public void teardown() {
 
-    if(file != null && file.exists() && !file.isDirectory()) {
-      file.delete();
-    }
   }
 
   @Test
@@ -42,15 +34,8 @@ public class TestInfiniteStateMachine {
 
   @Test
   public void testInfiniteStateMachineImportsProperties() {
-    try {
-      String tmpProps = tmpFolder.newFile("test.properties").getAbsolutePath();
-      String tmpDir = tmpFolder.getRoot().getAbsolutePath();
-      CommonSupportMethods.createTmpPropertiesFile(tmpProps, tmpDir);
-
+      String tmpProps = CommonSupportMethods.createTmpPropertiesFile(tmpFolder);
       InfiniteStateMachine ism = new InfiniteStateMachine(tmpProps);
       assertEquals(ism.getRdbms(), "sqlite3");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 }

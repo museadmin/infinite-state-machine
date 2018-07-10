@@ -41,15 +41,8 @@ public class TestPropertyCache {
   }
   @Test
   public void testImportPropertiesOverridesDefaults() {
-    try {
-      String tmpProps = tmpFolder.newFile("test.properties").getAbsolutePath();
-      String tmpDir = tmpFolder.getRoot().getAbsolutePath();
-      CommonSupportMethods.createTmpPropertiesFile(tmpProps, tmpDir);
-
+      String tmpProps = CommonSupportMethods.createTmpPropertiesFile(tmpFolder);
       propertyCache.importProperties(tmpProps);
       assertEquals(propertyCache.getProperty("rdbms"), "sqlite3");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 }
