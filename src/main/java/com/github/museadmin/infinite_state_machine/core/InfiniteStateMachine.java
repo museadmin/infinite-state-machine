@@ -1,8 +1,8 @@
 package com.github.museadmin.infinite_state_machine.core;
 
-import com.github.museadmin.infinite_state_machine.dal.IDataAccessLayer;
-import com.github.museadmin.infinite_state_machine.dal.Postgres;
-import com.github.museadmin.infinite_state_machine.dal.Sqlite3;
+import com.github.museadmin.infinite_state_machine.common.dal.IDataAccessLayer;
+import com.github.museadmin.infinite_state_machine.common.dal.Postgres;
+import com.github.museadmin.infinite_state_machine.common.dal.Sqlite3;
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
 import org.json.JSONObject;
 import org.slf4j.Logger;

@@ -1,15 +1,48 @@
 package com.github.museadmin.infinite_state_machine.action;
 
+import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Parent Action class implements the methods common to all Actions.
- * Namely:
- * Checking if the action is enabled
- * Retrieving the payload from the database
- * Activating and Deactivating an action, including itself
- * Adding an action's states to the database
+ * Parent for all actions.
  */
-public class Action extends ParentAction {
+public class Action {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(InfiniteStateMachine.class.getName());
+
+  public Action() {
+
+  }
+
+  /**
+   * Activate an action.
+   */
+  private void activate() {
+
+  }
+
+  /**
+   * Test if action is active.
+   * @return True if action is active.
+   */
+  private Boolean active() {
+    return true;
+  }
+
+  /**
+   * Deactivate an action.
+   */
+  private void deactivate() {
+
+  }
+
+  /**
+   * Return the payload for this action read from the database.
+   */
+  private void payload() {
+
+  }
 
 
 }
