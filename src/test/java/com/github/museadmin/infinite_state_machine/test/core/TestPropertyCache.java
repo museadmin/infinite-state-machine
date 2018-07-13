@@ -19,7 +19,7 @@ public class TestPropertyCache {
 
   @Before
   public void setUp(){
-    propertyCache = new PropertyCache("environment.properties");
+    propertyCache = new PropertyCache("config.properties");
   }
 
   @Test

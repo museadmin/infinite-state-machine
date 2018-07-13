@@ -1,9 +1,12 @@
 package com.github.museadmin.infinite_state_machine.core;
 
+import com.github.museadmin.infinite_state_machine.common.action.IActionPack;
 import com.github.museadmin.infinite_state_machine.common.dal.IDataAccessLayer;
 import com.github.museadmin.infinite_state_machine.common.dal.Postgres;
 import com.github.museadmin.infinite_state_machine.common.dal.Sqlite3;
+import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +24,9 @@ import java.io.InputStreamReader;
 public class InfiniteStateMachine {
 
   private String dbFile;
+  private ISMCoreActionPack ismCoreActionPack = new ISMCoreActionPack();
   private String epochSeconds = Long.toString(System.currentTimeMillis());
-  private PropertyCache propertyCache = new PropertyCache("environment.properties");
+  private PropertyCache propertyCache = new PropertyCache("config.properties");
   private static final Logger LOGGER = LoggerFactory.getLogger(InfiniteStateMachine.class.getName());
 
   public String getRdbms() {
@@ -37,7 +41,9 @@ public class InfiniteStateMachine {
     rdbms = propertyCache.getProperty("rdbms");
     createRuntimeDirectories();
     createDatabase();
-    createDefaultTables();
+
+    // One off import for core action pack
+    importActionPack(ismCoreActionPack);
   }
 
   public InfiniteStateMachine(String propertiesFile){
@@ -45,7 +51,14 @@ public class InfiniteStateMachine {
     rdbms = propertyCache.getProperty("rdbms");
     createRuntimeDirectories();
     createDatabase();
-    createDefaultTables();
+
+    // One off import for core action pack
+    importActionPack(ismCoreActionPack);
+  }
+
+  public void importActionPack(IActionPack ap) {
+    createDefaultTables(ap.getJsonObjectFromResourceFile("tables.json"));
+//    JSONObject states = ap.getJsonObjectFromResourceFile("states.json");
   }
 
   /**
@@ -53,6 +66,7 @@ public class InfiniteStateMachine {
    */
   private void createDatabase() {
     if (rdbms.equalsIgnoreCase("SQLITE3")) {
+
       // Create the runtime dir for the sqlite3 db
       String dbPath = runRoot + "control" + File.separator + "database";
       File dir = new File (dbPath);
@@ -61,6 +75,7 @@ public class InfiniteStateMachine {
 
       // Create the database itself
       iDataAccessLayer = new Sqlite3(dbFile);
+
     } else if (rdbms.equalsIgnoreCase("POSTGRES")) {
       iDataAccessLayer = new Postgres(propertyCache, epochSeconds);
     } else {
@@ -72,11 +87,10 @@ public class InfiniteStateMachine {
    * Create the default tables in the database used by the state machine core
    * Table definitions are read in from the json files and passed to the DAO
    */
-  private void createDefaultTables() {
-
-    String[] files = { "tblState.json", "tblStateMachine.json", "tblProperties.json", "tblDependencies.json" };
-    for (String file : files) {
-      iDataAccessLayer.createTable(getTableDefinitionFromResource(file));
+  private void createDefaultTables(JSONObject json) {
+    JSONArray tables = json.getJSONArray("tables");
+    for (int i = 0; i < tables.length(); i++) {
+      iDataAccessLayer.createTable(tables.getJSONObject(i));
     }
   }
 
@@ -92,6 +106,7 @@ public class InfiniteStateMachine {
 
   /**
    * Returns a JSONObject populated from a JSON file in the resources directory
+   * TODO Change over to common lib json reader
    * @param jsonFileName String representing the unqualified file name
    * @return JSONObject
    */
