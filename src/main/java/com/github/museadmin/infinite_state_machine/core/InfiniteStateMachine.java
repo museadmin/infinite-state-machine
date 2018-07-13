@@ -10,12 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * The primary parent object that contains all of the components
@@ -32,11 +27,13 @@ public class InfiniteStateMachine {
   public String getRdbms() {
     return rdbms;
   }
-
   private String rdbms;
   private String runRoot;
   private IDataAccessLayer iDataAccessLayer = null;
 
+  /**
+   * Default constructor
+   */
   public InfiniteStateMachine() {
     rdbms = propertyCache.getProperty("rdbms");
     createRuntimeDirectories();
@@ -46,19 +43,33 @@ public class InfiniteStateMachine {
     importActionPack(ismCoreActionPack);
   }
 
+  /**
+   * Constructor accepts a fully qualified path to an alternative
+   * properties file. This enables applications to pass in their own
+   * properties.
+   * @param propertiesFile
+   */
   public InfiniteStateMachine(String propertiesFile){
     propertyCache.importProperties(propertiesFile);
     rdbms = propertyCache.getProperty("rdbms");
     createRuntimeDirectories();
     createDatabase();
 
-    // One off import for core action pack
+    // One off import for core action pack. Other action
+    // packs would be imported by applications
     importActionPack(ismCoreActionPack);
   }
 
+  /**
+   * The meat and gristle of the state machine. Action packs
+   * contain all of the actions necessary to express a specific
+   * functionality. e.g. A messaging service.
+   * @param ap
+   */
   public void importActionPack(IActionPack ap) {
-    createDefaultTables(ap.getJsonObjectFromResourceFile("tables.json"));
-//    JSONObject states = ap.getJsonObjectFromResourceFile("states.json");
+    createTables(ap.getJsonObjectFromResourceFile("tables.json"));
+    insertStates(ap.getJsonObjectFromResourceFile("states.json"));
+    insertActions(ap.getJsonObjectFromResourceFile("actions.json"));
   }
 
   /**
@@ -87,10 +98,38 @@ public class InfiniteStateMachine {
    * Create the default tables in the database used by the state machine core
    * Table definitions are read in from the json files and passed to the DAO
    */
-  private void createDefaultTables(JSONObject json) {
-    JSONArray tables = json.getJSONArray("tables");
-    for (int i = 0; i < tables.length(); i++) {
-      iDataAccessLayer.createTable(tables.getJSONObject(i));
+  private void createTables(JSONObject jsonObject) {
+    JSONArray tables = jsonObject.getJSONArray("tables");
+    if (tables != null) {
+      for (int i = 0; i < tables.length(); i++) {
+        iDataAccessLayer.createTable(tables.getJSONObject(i));
+      }
+    }
+  }
+
+  /**
+   * Insert the states provided by an action pack into the state table
+   * @param jsonObject A JSONObject that contains the data to be inserted
+   */
+  private void insertStates(JSONObject jsonObject) {
+    JSONArray states = jsonObject.getJSONArray("states");
+    if (states != null) {
+      for (int i = 0; i < states.length(); i++) {
+        iDataAccessLayer.insertState(states.getJSONArray(i));
+      }
+    }
+  }
+
+  /**
+   * Insert the actions provided by an action pack into the state_machine table
+   * @param jsonObject A JSONObject that contains the data to be inserted
+   */
+  private void insertActions(JSONObject jsonObject) {
+    JSONArray actions = jsonObject.getJSONArray("actions");
+    if (actions != null) {
+      for (int i = 0; i < actions.length(); i++) {
+        iDataAccessLayer.insertAction(actions.getJSONArray(i));
+      }
     }
   }
 
@@ -102,34 +141,6 @@ public class InfiniteStateMachine {
       epochSeconds + File.separator;
     File root = new File(runRoot);
     if (! root.isDirectory()) { root.mkdirs(); }
-  }
-
-  /**
-   * Returns a JSONObject populated from a JSON file in the resources directory
-   * TODO Change over to common lib json reader
-   * @param jsonFileName String representing the unqualified file name
-   * @return JSONObject
-   */
-  private JSONObject getTableDefinitionFromResource(String jsonFileName) {
-
-    InputStream is = ClassLoader.getSystemResourceAsStream(jsonFileName);
-    InputStreamReader isr;
-    BufferedReader br;
-    StringBuilder sb = new StringBuilder();
-    String content;
-    try {
-      isr = new InputStreamReader(is);
-      br = new BufferedReader(isr);
-      while ((content = br.readLine()) != null) {
-          sb.append(content);
-      }
-      isr.close();
-      br.close();
-    } catch (IOException e) {
-      LOGGER.error(e.getClass().getName() + ": " + e.getMessage());
-      System.exit(1);
-    }
-    return new JSONObject(sb.toString());
   }
 
 }
