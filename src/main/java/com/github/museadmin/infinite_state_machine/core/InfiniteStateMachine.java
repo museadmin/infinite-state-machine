@@ -1,5 +1,6 @@
 package com.github.museadmin.infinite_state_machine.core;
 
+import com.github.museadmin.infinite_state_machine.common.action.Action;
 import com.github.museadmin.infinite_state_machine.common.action.IActionPack;
 import com.github.museadmin.infinite_state_machine.common.dal.IDataAccessLayer;
 import com.github.museadmin.infinite_state_machine.common.dal.Postgres;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * The primary parent object that contains all of the components
@@ -30,6 +32,7 @@ public class InfiniteStateMachine {
   private String rdbms;
   private String runRoot;
   private IDataAccessLayer iDataAccessLayer = null;
+  private ArrayList<Action> actions = new ArrayList<>();
 
   /**
    * Default constructor
@@ -49,14 +52,14 @@ public class InfiniteStateMachine {
    * properties.
    * @param propertiesFile
    */
-  public InfiniteStateMachine(String propertiesFile){
+  public InfiniteStateMachine(String propertiesFile) {
     propertyCache.importProperties(propertiesFile);
     rdbms = propertyCache.getProperty("rdbms");
     createRuntimeDirectories();
     createDatabase();
 
     // One off import for core action pack. Other action
-    // packs would be imported by applications
+    // packs would be imported at request of applications
     importActionPack(ismCoreActionPack);
   }
 
@@ -66,10 +69,24 @@ public class InfiniteStateMachine {
    * functionality. e.g. A messaging service.
    * @param ap
    */
+  @SuppressWarnings("unchecked")
   public void importActionPack(IActionPack ap) {
+    // First create the runtime tables and populate with states etc.
     createTables(ap.getJsonObjectFromResourceFile("tables.json"));
     insertStates(ap.getJsonObjectFromResourceFile("states.json"));
     insertActions(ap.getJsonObjectFromResourceFile("actions.json"));
+    // Import the action classes from the action pack
+    ArrayList tmpActions = ismCoreActionPack.getActionsFromActionPack();
+    if (tmpActions != null){
+      tmpActions.forEach(
+          action -> {
+            if(actions.contains(action)) {
+              throw new RuntimeException("Class of type " + action.toString());
+            }
+            actions.add((Action) action);
+          }
+      );
+    }
   }
 
   /**

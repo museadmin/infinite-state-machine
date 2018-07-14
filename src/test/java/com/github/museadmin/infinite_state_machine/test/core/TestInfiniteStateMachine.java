@@ -34,7 +34,7 @@ public class TestInfiniteStateMachine {
   }
 
   @Test
-  public void testInfiniteStateMachineImportsProperties() {
+  public void testInfiniteStateMachineImportsProperties() throws Exception {
       String tmpProps = CommonSupportMethods.createTmpPropertiesFile(tmpFolder);
       InfiniteStateMachine ism = new InfiniteStateMachine(tmpProps);
       assertEquals(ism.getRdbms(), "sqlite3");
