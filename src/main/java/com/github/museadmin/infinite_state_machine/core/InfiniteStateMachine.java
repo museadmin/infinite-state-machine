@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -42,7 +43,9 @@ public class InfiniteStateMachine {
     createRuntimeDirectories();
     createDatabase();
 
-    // One off import for core action pack
+    // One-off import for core action pack. Other action
+    // packs would be imported at request of applications
+    // via the public importActionPack method
     importActionPack(ismCoreActionPack);
   }
 
@@ -58,8 +61,9 @@ public class InfiniteStateMachine {
     createRuntimeDirectories();
     createDatabase();
 
-    // One off import for core action pack. Other action
+    // One-off import for core action pack. Other action
     // packs would be imported at request of applications
+    // via the public importActionPack method
     importActionPack(ismCoreActionPack);
   }
 
