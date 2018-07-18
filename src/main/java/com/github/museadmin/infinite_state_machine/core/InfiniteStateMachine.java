@@ -1,39 +1,15 @@
 package com.github.museadmin.infinite_state_machine.core;
 
-import com.github.museadmin.infinite_state_machine.common.action.Action;
-import com.github.museadmin.infinite_state_machine.common.action.IActionPack;
-import com.github.museadmin.infinite_state_machine.common.dal.IDataAccessLayer;
-import com.github.museadmin.infinite_state_machine.common.dal.Postgres;
-import com.github.museadmin.infinite_state_machine.common.dal.Sqlite3;
-import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
-import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.ArrayList;
 
 /**
  * The primary parent object that contains all of the components
  * of the infinite state machine
  */
-public class InfiniteStateMachine {
+public class InfiniteStateMachine extends Bootstrap {
 
-  private String dbFile;
-  private ISMCoreActionPack ismCoreActionPack = new ISMCoreActionPack();
-  private String epochSeconds = Long.toString(System.currentTimeMillis());
-  private PropertyCache propertyCache = new PropertyCache("config.properties");
   private static final Logger LOGGER = LoggerFactory.getLogger(InfiniteStateMachine.class.getName());
-
-  public String getRdbms() {
-    return rdbms;
-  }
-  private String rdbms;
-  private String runRoot;
-  private IDataAccessLayer iDataAccessLayer = null;
-  private ArrayList<Action> actions = new ArrayList<>();
 
   /**
    * Default constructor
@@ -68,100 +44,11 @@ public class InfiniteStateMachine {
   }
 
   /**
-   * The meat and gristle of the state machine. Action packs
-   * contain all of the actions necessary to express a specific
-   * functionality. e.g. A messaging service.
-   * @param ap
+   * TODO main loop
+   * File based messaging actions should be part of core
+   * action pack. They can then be used for unit testing.
+   * Need to be able to disable from properties.
+   * msg action should not write msg to db if target action
+   * is already active.
    */
-  @SuppressWarnings("unchecked")
-  public void importActionPack(IActionPack ap) {
-    // First create the runtime tables and populate with states etc.
-    createTables(ap.getJsonObjectFromResourceFile("tables.json"));
-    insertStates(ap.getJsonObjectFromResourceFile("states.json"));
-    insertActions(ap.getJsonObjectFromResourceFile("actions.json"));
-    // Import the action classes from the action pack
-    ArrayList tmpActions = ismCoreActionPack.getActionsFromActionPack();
-    if (tmpActions != null){
-      tmpActions.forEach(
-          action -> {
-            if(actions.contains(action)) {
-              throw new RuntimeException("Class of type " + action.toString());
-            }
-            actions.add((Action) action);
-          }
-      );
-    }
-  }
-
-  /**
-   * Create a unique database instance for the run
-   */
-  private void createDatabase() {
-    if (rdbms.equalsIgnoreCase("SQLITE3")) {
-
-      // Create the runtime dir for the sqlite3 db
-      String dbPath = runRoot + "control" + File.separator + "database";
-      File dir = new File (dbPath);
-      if (! dir.isDirectory()) { dir.mkdirs(); }
-      dbFile = dbPath + File.separator + "ism.db";
-
-      // Create the database itself
-      iDataAccessLayer = new Sqlite3(dbFile);
-
-    } else if (rdbms.equalsIgnoreCase("POSTGRES")) {
-      iDataAccessLayer = new Postgres(propertyCache, epochSeconds);
-    } else {
-      throw new RuntimeException("Failed to identify RDBMS in use from property file");
-    }
-  }
-
-  /**
-   * Create the default tables in the database used by the state machine core
-   * Table definitions are read in from the json files and passed to the DAO
-   */
-  private void createTables(JSONObject jsonObject) {
-    JSONArray tables = jsonObject.getJSONArray("tables");
-    if (tables != null) {
-      for (int i = 0; i < tables.length(); i++) {
-        iDataAccessLayer.createTable(tables.getJSONObject(i));
-      }
-    }
-  }
-
-  /**
-   * Insert the states provided by an action pack into the state table
-   * @param jsonObject A JSONObject that contains the data to be inserted
-   */
-  private void insertStates(JSONObject jsonObject) {
-    JSONArray states = jsonObject.getJSONArray("states");
-    if (states != null) {
-      for (int i = 0; i < states.length(); i++) {
-        iDataAccessLayer.insertState(states.getJSONArray(i));
-      }
-    }
-  }
-
-  /**
-   * Insert the actions provided by an action pack into the state_machine table
-   * @param jsonObject A JSONObject that contains the data to be inserted
-   */
-  private void insertActions(JSONObject jsonObject) {
-    JSONArray actions = jsonObject.getJSONArray("actions");
-    if (actions != null) {
-      for (int i = 0; i < actions.length(); i++) {
-        iDataAccessLayer.insertAction(actions.getJSONArray(i));
-      }
-    }
-  }
-
-  /**
-   * Each run needs its own distinct run directory structure created
-   */
-  private void createRuntimeDirectories() {
-    runRoot = propertyCache.getProperty("runRoot") + File.separator +
-      epochSeconds + File.separator;
-    File root = new File(runRoot);
-    if (! root.isDirectory()) { root.mkdirs(); }
-  }
-
 }
