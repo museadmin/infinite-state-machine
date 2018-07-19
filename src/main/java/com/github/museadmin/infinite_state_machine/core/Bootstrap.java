@@ -2,11 +2,8 @@ package com.github.museadmin.infinite_state_machine.core;
 
 import com.github.museadmin.infinite_state_machine.common.action.Action;
 import com.github.museadmin.infinite_state_machine.common.action.IActionPack;
-import com.github.museadmin.infinite_state_machine.common.dal.IDataAccessLayer;
 import com.github.museadmin.infinite_state_machine.common.dal.Postgres;
 import com.github.museadmin.infinite_state_machine.common.dal.Sqlite3;
-import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
-import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,19 +14,7 @@ import java.util.ArrayList;
  * Bootstrapper contains the methods to get the state machine
  * running with all of its default core actions and dependencies
  */
-public class Bootstrap {
-
-    public ArrayList<Action> actions = new ArrayList<>();
-    public String dbFile;
-    public String epochSeconds = Long.toString(System.currentTimeMillis());
-    public IDataAccessLayer iDataAccessLayer = null;
-    public ISMCoreActionPack ismCoreActionPack = new ISMCoreActionPack();
-    public PropertyCache propertyCache = new PropertyCache("config.properties");
-    public String getRdbms() {
-        return rdbms;
-    }
-    public String rdbms;
-    public String runRoot;
+public class Bootstrap extends RunState {
 
     /**
      * Each run needs its own distinct run directory structure created

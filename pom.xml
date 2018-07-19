@@ -6,14 +6,50 @@
 
     <groupId>com.github.museadmin</groupId>
     <artifactId>infinite-state-machine</artifactId>
-    <version>${infinite.state.machine}</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>A state machine that doesn't have a finite number of states</description>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <developers>
+        <developer>
+            <name>Bradley Atkins</name>
+            <email>bradley.atkins@bjss.com</email>
+            <organization>Muse</organization>
+            <organizationUrl>https://github.com/museadmin/infinite-state-machine</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>git@github.com:museadmin/infinite-state-machine.git</connection>
+        <developerConnection>git@github.com:museadmin/infinite-state-machine.git</developerConnection>
+        <url>https://github.com/museadmin/infinite-state-machine</url>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <!--The identifier of the parent POM-->
     <parent>
         <groupId>com.github.museadmin</groupId>
         <artifactId>infinite-state-machine-parent-pom</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.1</version>
     </parent>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
     <build>
         <resources>
@@ -29,19 +65,80 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>com.github.museadmin</groupId>
             <artifactId>infinite-state-machine-core-action-pack</artifactId>
-            <version>${infinite.state.machine.core.action.pack}</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.museadmin</groupId>
             <artifactId>infinite-state-machine-common</artifactId>
-            <version>${infinite.state.machine.common}</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
