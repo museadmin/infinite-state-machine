@@ -20,5 +20,6 @@ public class RunState {
   }
   public String rdbms;
   public String runRoot;
+  public ArrayList<String> statements = new ArrayList<>();
 
 }

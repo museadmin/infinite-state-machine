@@ -17,7 +17,6 @@ public class InfiniteStateMachine extends Bootstrap {
   public InfiniteStateMachine() {
     rdbms = propertyCache.getProperty("rdbms");
     createRuntimeDirectories();
-    createDatabase();
 
     // One-off import for core action pack. Other action
     // packs would be imported at request of applications
@@ -35,7 +34,6 @@ public class InfiniteStateMachine extends Bootstrap {
     propertyCache.importProperties(propertiesFile);
     rdbms = propertyCache.getProperty("rdbms");
     createRuntimeDirectories();
-    createDatabase();
 
     // One-off import for core action pack. Other action
     // packs would be imported at request of applications
