@@ -60,15 +60,17 @@
     </build>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.github.museadmin/infinite-state-machine-core-action-pack -->
         <dependency>
             <groupId>com.github.museadmin</groupId>
             <artifactId>infinite-state-machine-core-action-pack</artifactId>
-            <version>1.1.1</version>
+            <version>${ism.core.action.pack.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.museadmin/infinite-state-machine-common -->
         <dependency>
             <groupId>com.github.museadmin</groupId>
             <artifactId>infinite-state-machine-common</artifactId>
-            <version>1.1.1</version>
+            <version>${ism.common.version}</version>
         </dependency>
     </dependencies>
 
