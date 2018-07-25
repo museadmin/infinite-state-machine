@@ -21,10 +21,25 @@ public class Bootstrap extends RunState {
    * Each run needs its own distinct run directory structure created
    */
   public void createRuntimeDirectories() {
-      runRoot = propertyCache.getProperty("runRoot") + File.separator +
-          epochSeconds + File.separator;
-      File root = new File(runRoot);
-      if (! root.isDirectory()) { root.mkdirs(); }
+
+    // Create the root directory for this run
+    runRoot = propertyCache.getProperty("runRoot") + File.separator +
+        epochSeconds + File.separator;
+    File root = new File(runRoot);
+    if (! root.isDirectory()) { root.mkdirs(); }
+
+    // Messaging directories
+    msgRoot = runRoot + File.separator + propertyCache.getProperty("msgRoot");
+    msgIn = msgRoot + File.separator + "in";
+    msgOut = msgRoot + File.separator + "out";
+    msgProcessed = msgRoot + File.separator + "processed";
+    File in = new File(msgIn);
+    File out = new File(msgOut);
+    File processed = new File(msgProcessed);
+    if (! in.isDirectory()) {in.mkdirs();}
+    if (! out.isDirectory()) {out.mkdirs();}
+    if (! out.isDirectory()) {out.mkdirs();}
+    if (! processed.isDirectory()) {processed.mkdirs();}
   }
 
   /**
@@ -39,7 +54,6 @@ public class Bootstrap extends RunState {
           }
       }
   }
-
 
   /**
    * The meat and gristle of the state machine. Action packs
@@ -59,7 +73,9 @@ public class Bootstrap extends RunState {
       tmpActions.forEach(
         action -> {
           if(actions.contains(action)) {
-            throw new RuntimeException("Class of type " + action.toString());
+            throw new RuntimeException("Class of type " +
+              action.toString() +
+            "is already loaded");
           }
           actions.add((Action) action);
         }

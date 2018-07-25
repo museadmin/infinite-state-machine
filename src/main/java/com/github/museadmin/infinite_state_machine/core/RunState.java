@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class RunState {
 
   public ArrayList<Action> actions = new ArrayList<>();
-  public String dbFile;
+
   public String epochSeconds = Long.toString(System.currentTimeMillis());
   public IDataAccessLayer iDataAccessLayer = null;
   public ISMCoreActionPack ismCoreActionPack = new ISMCoreActionPack();
@@ -18,8 +18,16 @@ public class RunState {
   public String getRdbms() {
     return rdbms;
   }
+
+  // Runtime directory structure and files
+  public String dbFile;
+  public String msgIn;
+  public String msgProcessed;
+  public String msgOut;
+  public String msgRoot;
   public String rdbms;
   public String runRoot;
+
   public ArrayList<String> statements = new ArrayList<>();
 
 }

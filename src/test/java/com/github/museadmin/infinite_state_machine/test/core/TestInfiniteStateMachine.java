@@ -2,11 +2,11 @@ package com.github.museadmin.infinite_state_machine.test.core;
 
 import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
 import com.github.museadmin.infinite_state_machine.test.common.CommonSupportMethods;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -22,11 +22,6 @@ public class TestInfiniteStateMachine {
     infiniteStateMachine = new InfiniteStateMachine();
   }
 
-  @After
-  public void teardown() {
-
-  }
-
   @Test
   public void testInfiniteStateMachineReadsRdbms() {
     assertTrue(infiniteStateMachine.getRdbms().equalsIgnoreCase("sqlite3") ||
@@ -34,9 +29,11 @@ public class TestInfiniteStateMachine {
   }
 
   @Test
-  public void testInfiniteStateMachineImportsProperties() {
+  public void testInfiniteStateMachineImportsThirdPartyProperties() {
       String tmpProps = CommonSupportMethods.createTmpPropertiesFile(tmpFolder);
       InfiniteStateMachine ism = new InfiniteStateMachine(tmpProps);
       assertEquals(ism.getRdbms(), "sqlite3");
   }
+
+
 }

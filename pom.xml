@@ -70,7 +70,8 @@
         <dependency>
             <groupId>com.github.museadmin</groupId>
             <artifactId>infinite-state-machine-common</artifactId>
-            <version>${ism.common.version}</version>
+            <!--<version>${ism.common.version}</version>-->
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
