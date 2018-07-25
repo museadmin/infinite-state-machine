@@ -49,4 +49,11 @@ public class InfiniteStateMachine extends Bootstrap {
    * msg action should not write msg to db if target action
    * is already active.
    */
+
+  /**
+   * Start the state machine after all actions imported
+   */
+  public void start() {
+
+  }
 }
