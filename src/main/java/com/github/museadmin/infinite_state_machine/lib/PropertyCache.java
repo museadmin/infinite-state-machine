@@ -59,6 +59,7 @@ public class PropertyCache {
   /**
    * Searches for the given key in the property cache.
    * @param key the hashtable key.
+   * @param defaultValue Default value supplied in case of no property set in file
    * @return The property or defaultValue if not found.
    */
   public String getProperty(String key, String defaultValue) {

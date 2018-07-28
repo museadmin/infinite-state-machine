@@ -1,11 +1,13 @@
 package com.github.museadmin.infinite_state_machine.core;
 
+import com.github.museadmin.infinite_state_machine.data.access.action.Action;
 import com.github.museadmin.infinite_state_machine.data.access.action.IActionPack;
 import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Bootstrapper contains the methods to get the state machine
@@ -36,6 +38,7 @@ public class Bootstrap extends RunState {
   /**
    * Create the default tables in the database used by the state machine core
    * Table definitions are read in from the json files and passed to the DAO
+   * @param jsonObject Object holds table metadata
    */
   public void createTables(JSONObject jsonObject) {
       JSONArray tables = jsonObject.getJSONArray("tables");
@@ -50,7 +53,7 @@ public class Bootstrap extends RunState {
    * The meat and gristle of the state machine. Action packs
    * contain all of the actions necessary to express a specific
    * functionality. e.g. A messaging service.
-   * @param ap
+   * @param ap The action pack being imported
    */
   @SuppressWarnings("unchecked")
   public void importActionPack(IActionPack ap) {
@@ -60,22 +63,22 @@ public class Bootstrap extends RunState {
     populateDatabase(ap);
 
     // Import the action classes from the action pack
-//    ArrayList tmpActions = ismCoreActionPack.getActionsFromActionPack(
-//      dataAccessLayer,
-//      runRoot
-//    );
-//    if (tmpActions != null){
-//      tmpActions.forEach(
-//        action -> {
-//          if(actions.contains(action)) {
-//            throw new RuntimeException("Class of type " +
-//              action.toString() +
-//            "is already loaded");
-//          }
-//          actions.add((Action) action);
-//        }
-//      );
-//    }
+    ArrayList tmpActions = ismCoreActionPack.getActionsFromActionPack(
+      dataAccessLayer,
+      runRoot
+    );
+    if (tmpActions != null){
+      tmpActions.forEach(
+        action -> {
+          if(actions.contains(action)) {
+            throw new RuntimeException("Class of type " +
+              action.toString() +
+            "is already loaded");
+          }
+          actions.add((Action) action);
+        }
+      );
+    }
   }
 
   /**

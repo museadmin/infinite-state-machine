@@ -47,7 +47,7 @@ public class DataAccessLayer implements IDataAccessLayer {
   /**
    * Execute a SQL query and return the results in an array list
    * @param sql The query
-   * @return ArrayList<String> the records returned
+   * @return ArrayList holds the records returned
    */
   public ArrayList<String> executeSqlQuery(String sql) {
     return iDataAccessObject.executeSqlQuery(sql);

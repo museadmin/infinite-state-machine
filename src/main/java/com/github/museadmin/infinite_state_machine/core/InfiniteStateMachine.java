@@ -27,7 +27,7 @@ public class InfiniteStateMachine extends Bootstrap {
    * Constructor accepts a fully qualified path to an alternative
    * properties file. This enables applications to pass in their own
    * properties.
-   * @param propertiesFile
+   * @param propertiesFile Fully qualified name of properties file
    */
   public InfiniteStateMachine(String propertiesFile) {
     propertyCache.importProperties(propertiesFile);

@@ -48,6 +48,7 @@ public class Action {
 
   /**
    * Deactivate an action.
+   * @param actionFlag The name of the action to deactivate
    */
   public void deactivate(String actionFlag) {
 
