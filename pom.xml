@@ -8,7 +8,7 @@
     <artifactId>infinite-state-machine</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>A state machine that doesn't have a finite number of states</description>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
 
     <developers>
@@ -41,7 +41,7 @@
     <parent>
         <groupId>com.github.museadmin</groupId>
         <artifactId>infinite-state-machine-parent-pom</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.1-SNAPSHOT</version>
     </parent>
 
     <licenses>
@@ -66,12 +66,17 @@
             <artifactId>infinite-state-machine-core-action-pack</artifactId>
             <version>${ism.core.action.pack.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.github.museadmin/infinite-state-machine-common -->
+        <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
         <dependency>
-            <groupId>com.github.museadmin</groupId>
-            <artifactId>infinite-state-machine-common</artifactId>
-            <!--<version>${ism.common.version}</version>-->
-            <version>1.1.1-SNAPSHOT</version>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.11</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.0</version>
         </dependency>
     </dependencies>
 

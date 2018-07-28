@@ -1,4 +1,4 @@
-package com.github.museadmin.infinite_state_machine.test.common;
+package com.github.museadmin.infinite_state_machine.test.support;
 
 import org.junit.rules.TemporaryFolder;
 import java.io.FileNotFoundException;

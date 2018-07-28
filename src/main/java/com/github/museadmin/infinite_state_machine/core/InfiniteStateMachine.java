@@ -16,11 +16,10 @@ public class InfiniteStateMachine extends Bootstrap {
    */
   public InfiniteStateMachine() {
     rdbms = propertyCache.getProperty("rdbms");
+    // Control directories and DB
     createRuntimeDirectories();
-
-    // One-off import for core action pack. Other action
-    // packs would be imported at request of applications
-    // via the public importActionPack method
+    createDatabase();
+    // Load the core actions
     importActionPack(ismCoreActionPack);
   }
 
@@ -33,11 +32,10 @@ public class InfiniteStateMachine extends Bootstrap {
   public InfiniteStateMachine(String propertiesFile) {
     propertyCache.importProperties(propertiesFile);
     rdbms = propertyCache.getProperty("rdbms");
+    // Control directories and DB
     createRuntimeDirectories();
-
-    // One-off import for core action pack. Other action
-    // packs would be imported at request of applications
-    // via the public importActionPack method
+    createDatabase();
+    // Load the core actions
     importActionPack(ismCoreActionPack);
   }
 

@@ -1,7 +1,7 @@
 package com.github.museadmin.infinite_state_machine.test.core;
 
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
-import com.github.museadmin.infinite_state_machine.test.common.CommonSupportMethods;
+import com.github.museadmin.infinite_state_machine.test.support.CommonSupportMethods;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

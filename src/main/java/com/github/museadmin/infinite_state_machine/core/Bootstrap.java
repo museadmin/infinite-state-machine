@@ -1,21 +1,25 @@
 package com.github.museadmin.infinite_state_machine.core;
 
-import com.github.museadmin.infinite_state_machine.common.action.Action;
-import com.github.museadmin.infinite_state_machine.common.action.IActionPack;
-import com.github.museadmin.infinite_state_machine.common.dal.Postgres;
-import com.github.museadmin.infinite_state_machine.common.dal.Sqlite3;
-import com.github.museadmin.infinite_state_machine.common.utils.JsonToSqlEtl;
+import com.github.museadmin.infinite_state_machine.data.access.action.IActionPack;
+import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * Bootstrapper contains the methods to get the state machine
  * running with all of its default core actions and dependencies
  */
 public class Bootstrap extends RunState {
+
+  /**
+   * Create a unique database instance for the run
+   */
+  public void createDatabase() {
+    dataAccessLayer = new DataAccessLayer(propertyCache, runRoot,epochSeconds);
+
+  }
 
   /**
    * Each run needs its own distinct run directory structure created
@@ -27,19 +31,6 @@ public class Bootstrap extends RunState {
         epochSeconds + File.separator;
     File root = new File(runRoot);
     if (! root.isDirectory()) { root.mkdirs(); }
-
-    // Messaging directories
-    msgRoot = runRoot + File.separator + propertyCache.getProperty("msgRoot");
-    msgIn = msgRoot + File.separator + "in";
-    msgOut = msgRoot + File.separator + "out";
-    msgProcessed = msgRoot + File.separator + "processed";
-    File in = new File(msgIn);
-    File out = new File(msgOut);
-    File processed = new File(msgProcessed);
-    if (! in.isDirectory()) {in.mkdirs();}
-    if (! out.isDirectory()) {out.mkdirs();}
-    if (! out.isDirectory()) {out.mkdirs();}
-    if (! processed.isDirectory()) {processed.mkdirs();}
   }
 
   /**
@@ -50,7 +41,7 @@ public class Bootstrap extends RunState {
       JSONArray tables = jsonObject.getJSONArray("tables");
       if (tables != null) {
           for (int i = 0; i < tables.length(); i++) {
-              iDataAccessLayer.createTable(tables.getJSONObject(i));
+              dataAccessLayer.createTable(tables.getJSONObject(i));
           }
       }
   }
@@ -64,45 +55,27 @@ public class Bootstrap extends RunState {
   @SuppressWarnings("unchecked")
   public void importActionPack(IActionPack ap) {
 
-    createDatabase();
+    // Pick up any data / metadata that the action pack wants
+    // in the database
     populateDatabase(ap);
 
     // Import the action classes from the action pack
-    ArrayList tmpActions = ismCoreActionPack.getActionsFromActionPack();
-    if (tmpActions != null){
-      tmpActions.forEach(
-        action -> {
-          if(actions.contains(action)) {
-            throw new RuntimeException("Class of type " +
-              action.toString() +
-            "is already loaded");
-          }
-          actions.add((Action) action);
-        }
-      );
-    }
-  }
-
-  /**
-   * Create a unique database instance for the run
-   */
-  private void createDatabase() {
-    if (rdbms.equalsIgnoreCase("SQLITE3")) {
-
-      // Create the runtime dir for the sqlite3 db
-      String dbPath = runRoot + "control" + File.separator + "database";
-      File dir = new File (dbPath);
-      if (! dir.isDirectory()) { dir.mkdirs(); }
-      dbFile = dbPath + File.separator + "ism.db";
-
-      // Create the database itself
-      iDataAccessLayer = new Sqlite3(dbFile);
-
-    } else if (rdbms.equalsIgnoreCase("POSTGRES")) {
-      iDataAccessLayer = new Postgres(propertyCache, epochSeconds);
-    } else {
-      throw new RuntimeException("Failed to identify RDBMS in use from property file");
-    }
+//    ArrayList tmpActions = ismCoreActionPack.getActionsFromActionPack(
+//      dataAccessLayer,
+//      runRoot
+//    );
+//    if (tmpActions != null){
+//      tmpActions.forEach(
+//        action -> {
+//          if(actions.contains(action)) {
+//            throw new RuntimeException("Class of type " +
+//              action.toString() +
+//            "is already loaded");
+//          }
+//          actions.add((Action) action);
+//        }
+//      );
+//    }
   }
 
   /**
@@ -113,9 +86,9 @@ public class Bootstrap extends RunState {
     // First create the runtime tables
     createTables(ap.getJsonObjectFromResourceFile("tables.json"));
     // Parse the table data from the json definitions
-    statements = JsonToSqlEtl.parseSqlFromJson(ap.getJsonObjectFromResourceFile("pack_data.json"));
+//    statements = JsonToSqlEtl.parseSqlFromJson(ap.getJsonObjectFromResourceFile("pack_data.json"));
     // Use the statements from the ActionPack to populate the tables
-    statements.forEach(statement -> iDataAccessLayer.executeSqlStatement(statement));
+    statements.forEach(statement -> dataAccessLayer.executeSqlStatement(statement));
   }
 
 }
