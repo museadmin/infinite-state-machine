@@ -1,7 +1,7 @@
 package com.github.museadmin.infinite_state_machine.core;
 
 import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
-import com.github.museadmin.infinite_state_machine.data.access.action.Action;
+import com.github.museadmin.infinite_state_machine.data.access.action.IAction;
 import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
 
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class RunState {
 
-  public ArrayList<Action> actions = new ArrayList<>();
+  public ArrayList<IAction> actions = new ArrayList<>();
 
   public String epochSeconds = Long.toString(System.currentTimeMillis());
   public DataAccessLayer dataAccessLayer = null;

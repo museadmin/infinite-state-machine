@@ -40,18 +40,12 @@ public class InfiniteStateMachine extends Bootstrap {
   }
 
   /**
-   * TODO main loop
-   * File based messaging actions should be part of core
-   * action pack. They can then be used for unit testing.
-   * Need to be able to disable from properties.
-   * msg action should not write msg to db if target action
-   * is already active.
+   * Run the state machine main control loop in a
+   * background thread.
    */
-
-  /**
-   * Start the state machine after all actions imported
-   */
-  public void start() {
-
+  public void execute() {
+    for (int i = 0; i < actions.size(); i++) {
+      actions.get(i).execute();
+    }
   }
 }

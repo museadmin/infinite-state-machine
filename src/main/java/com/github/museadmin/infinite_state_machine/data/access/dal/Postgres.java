@@ -64,6 +64,14 @@ public class Postgres implements IDataAccessObject {
   }
 
   /**
+   * Deactivate an action.
+   * @param actionName The name of the action to deactivate
+   */
+  public void deactivate(String actionName) {
+
+  }
+
+  /**
    * Executes a SQL statement
    * @param sql The statement to execute
    * @return True or False for success or failure
@@ -81,6 +89,17 @@ public class Postgres implements IDataAccessObject {
       }
       return rc;
   }
+
+  public Boolean notActive(String actionName) {
+    return true;
+  }
+
+  /**
+   * Query a property in the properties table
+   * @param property Name of the property
+   * @return value of the property
+   */
+  public String queryProperty(String property) {return "";}
 
   public ArrayList<String> executeSqlQuery(String sql) {
     ArrayList<String> resultList = new ArrayList<>();

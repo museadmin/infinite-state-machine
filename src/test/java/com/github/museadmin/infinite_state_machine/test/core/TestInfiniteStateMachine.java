@@ -35,5 +35,9 @@ public class TestInfiniteStateMachine {
       assertEquals(ism.getRdbms(), "sqlite3");
   }
 
+  @Test
+  public void setInfiniteStateMachineExecutesActions() {
+    infiniteStateMachine.execute();
+  }
 
 }

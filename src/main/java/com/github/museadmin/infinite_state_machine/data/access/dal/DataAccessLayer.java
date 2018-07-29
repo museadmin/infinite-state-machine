@@ -44,6 +44,34 @@ public class DataAccessLayer implements IDataAccessLayer {
     }
   }
 
+  // ================= Action Helper Methods =================
+  /**
+   * Test if this action is active
+   * @return True or False for not active
+   */
+  public Boolean notActive(String actionName) {
+    return iDataAccessObject.notActive(actionName);
+  }
+
+  /**
+   * Deactivate an action.
+   * @param actionName The name of the action to deactivate
+   */
+  public void deactivate(String actionName) {
+    iDataAccessObject.deactivate(actionName);
+  }
+
+  /**
+   * Query a property in the properties table
+   * @param property Name of the property
+   * @return value of the property
+   */
+  public String queryProperty(String property) {
+    return iDataAccessObject.queryProperty(property);
+  }
+
+  // ================= Direct Database Manipulation =================
+
   /**
    * Execute a SQL query and return the results in an array list
    * @param sql The query

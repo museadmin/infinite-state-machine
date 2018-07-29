@@ -1,8 +1,9 @@
 package com.github.museadmin.infinite_state_machine.core;
 
-import com.github.museadmin.infinite_state_machine.data.access.action.Action;
+import com.github.museadmin.infinite_state_machine.data.access.action.IAction;
 import com.github.museadmin.infinite_state_machine.data.access.action.IActionPack;
 import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
+import com.github.museadmin.infinite_state_machine.data.access.utils.JsonToSqlEtl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,7 +21,6 @@ public class Bootstrap extends RunState {
    */
   public void createDatabase() {
     dataAccessLayer = new DataAccessLayer(propertyCache, runRoot,epochSeconds);
-
   }
 
   /**
@@ -75,7 +75,7 @@ public class Bootstrap extends RunState {
               action.toString() +
             "is already loaded");
           }
-          actions.add((Action) action);
+          actions.add((IAction) action);
         }
       );
     }
@@ -89,7 +89,7 @@ public class Bootstrap extends RunState {
     // First create the runtime tables
     createTables(ap.getJsonObjectFromResourceFile("tables.json"));
     // Parse the table data from the json definitions
-//    statements = JsonToSqlEtl.parseSqlFromJson(ap.getJsonObjectFromResourceFile("pack_data.json"));
+    statements = JsonToSqlEtl.parseSqlFromJson(ap.getJsonObjectFromResourceFile("pack_data.json"));
     // Use the statements from the ActionPack to populate the tables
     statements.forEach(statement -> dataAccessLayer.executeSqlStatement(statement));
   }

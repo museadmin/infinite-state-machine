@@ -53,7 +53,6 @@ public class ActionPack implements IActionPack {
     return new JSONObject(sb.toString());
   }
 
-
   /**
    * Use introspection to read in all of the classes in a given action pack
    * Filter out the ones that are actions and return them in an array
@@ -71,7 +70,7 @@ public class ActionPack implements IActionPack {
         .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageName))));
 
     Set<Class<? extends Action>> classes = reflections.getSubTypesOf(Action.class);
-    ArrayList<Action> actions = new ArrayList<>();
+    ArrayList<IAction> actions = new ArrayList<>();
 
     for (Class a : classes) {
       try {
@@ -96,4 +95,5 @@ public class ActionPack implements IActionPack {
     }
     return actions;
   }
+
 }

@@ -1,32 +1,42 @@
 package com.github.museadmin.infinite_state_machine.data.access.action;
 
+import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
+import java.io.File;
 
 
 /**
  * Parent for all actions.
  */
-public class Action {
+public abstract class Action implements IAction{
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Action.class.getName());
 
-  public String actionName = getClass().getName();
-  public String SQLTRUE = "1";
-  public String SQLFALSE = "0";
+  public String actionName = getClass().getSimpleName();
+  public DataAccessLayer dataAccessLayer;
+  public String runRoot;
 
-  // ==================== Public Methods =====================
+  // ==================== Getter + Setters ====================
+
+  /**
+   * Assigne a reference to the DAL to the action
+   * @param dataAccessLayer The DAL
+   */
   public void setDataAccessLayer(DataAccessLayer dataAccessLayer) {
     this.dataAccessLayer = dataAccessLayer;
   }
-  public DataAccessLayer dataAccessLayer;
 
+  /**
+   * Reference to the top level run directory created for the run
+   * @param runRoot Fully qualified path to the run root directory
+   */
   public void setRunRoot(String runRoot) {
     this.runRoot = runRoot;
   }
-  public String runRoot;
+
+  // ==================== Helper Methods for Actions =====================
 
   /**
    * Activate an action.
@@ -36,14 +46,24 @@ public class Action {
   }
 
   /**
-   * Test if action is active.
-   * @return True if action is active.
+   * Create directory/s under the run root
+   * @param directory the directory or directories to append. Responsibility for ensuring
+   *                  the correct separator lies with the developer and is assumed to be
+   *                  correct.
    */
-  public Boolean actionIsNotActive() {
-    dataAccessLayer.executeSqlQuery(
-      "SELECT active, phase from actions where action = '" + actionName + "';"
-    );
-    return true;
+  public void createRunDirectory(String directory) {
+
+    String path = runRoot + File.separator + directory;
+
+    File target = new File(path);
+    if (! target.isDirectory()) { target.mkdirs(); }
+  }
+
+  /**
+   * Deactivate the current action
+   */
+  public void deactivate() {
+    dataAccessLayer.deactivate(actionName);
   }
 
   /**
@@ -51,7 +71,24 @@ public class Action {
    * @param actionFlag The name of the action to deactivate
    */
   public void deactivate(String actionFlag) {
+    dataAccessLayer.deactivate(actionFlag);
+  }
 
+  /**
+   * Test if this action is active
+   * @return True or False for not active
+   */
+  public Boolean notActive() {
+    return dataAccessLayer.notActive(actionName);
+  }
+
+  /**
+   * Query a property in the properties table
+   * @param property Name of the property
+   * @return value of the property
+   */
+  public String queryProperty(String property) {
+    return dataAccessLayer.queryProperty(property);
   }
 
   /**
