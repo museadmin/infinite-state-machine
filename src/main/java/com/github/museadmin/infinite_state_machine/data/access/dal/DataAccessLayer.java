@@ -45,12 +45,22 @@ public class DataAccessLayer implements IDataAccessLayer {
   }
 
   // ================= Action Helper Methods =================
+
   /**
-   * Test if this action is active
-   * @return True or False for not active
+   * Activate an action.
+   * @param actionName The name of the action to activate
    */
-  public Boolean notActive(String actionName) {
-    return iDataAccessObject.notActive(actionName);
+  public void activate(String actionName) {
+    iDataAccessObject.activate(actionName);
+  }
+
+  /**
+   * Check if all "Before" actions have completed so that we can
+   * change state to running.
+   * @return True if all complete
+   */
+  public Boolean beforeActionsComplete() {
+    return iDataAccessObject.beforeActionsComplete();
   }
 
   /**
@@ -62,12 +72,50 @@ public class DataAccessLayer implements IDataAccessLayer {
   }
 
   /**
+   * Test if this action is active
+   * @return True or False for not active
+   */
+  public Boolean active(String actionName) {
+    return iDataAccessObject.active(actionName);
+  }
+
+  /**
    * Query a property in the properties table
    * @param property Name of the property
    * @return value of the property
    */
   public String queryProperty(String property) {
     return iDataAccessObject.queryProperty(property);
+  }
+
+  /**
+   * Set the run state. The run states are an option group
+   * Hence the special method for setting these.
+   * EMERGENCY_SHUTDOWN
+   * NORMAL_SHUTDOWN
+   * RUNNING
+   * STARTING
+   * STOPPED
+   * @param runPhase Name of state to change to
+   */
+  public void changeRunPhase(String runPhase) {
+    iDataAccessObject.changeRunPhase(runPhase);
+  }
+
+  /**
+   * Set a state in the state table
+   * @param state The name of the state
+   */
+  public void setState(String state) {
+
+  }
+
+  /**
+   * Unset a state in the state table
+   * @param state The name of the state
+   */
+  public void unsetState(String state) {
+
   }
 
   // ================= Direct Database Manipulation =================

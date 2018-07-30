@@ -57,7 +57,10 @@ public class ActionPack implements IActionPack {
    * Use introspection to read in all of the classes in a given action pack
    * Filter out the ones that are actions and return them in an array
    */
-  public ArrayList getActionsFromActionPack(DataAccessLayer dataAccessLayer, String runRoot) {
+  public ArrayList getActionsFromActionPack(
+    DataAccessLayer dataAccessLayer,
+    String runRoot
+  ) {
     String packageName = this.getClass().getPackage().getName();
 
     List<ClassLoader> classLoadersList = new LinkedList<>();

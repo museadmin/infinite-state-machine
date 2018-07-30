@@ -44,8 +44,12 @@ public class InfiniteStateMachine extends Bootstrap {
    * background thread.
    */
   public void execute() {
-    for (int i = 0; i < actions.size(); i++) {
-      actions.get(i).execute();
+    int i = 0;
+    while (running) {
+      actions.get(i++).execute();
+      if (i == actions.size()) {
+        i = 0;
+      }
     }
   }
 }

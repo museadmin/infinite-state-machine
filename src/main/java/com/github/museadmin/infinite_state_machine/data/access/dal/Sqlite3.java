@@ -122,7 +122,7 @@ public class Sqlite3 implements IDataAccessObject {
           resultList.add(results.getString(i++));
         }
       }
-
+      connection.close();
     } catch (SQLException e) {
       e.printStackTrace();
       System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -142,6 +142,7 @@ public class Sqlite3 implements IDataAccessObject {
       Connection connection = getConnection(database);
       Statement statement = connection.createStatement();
       rc = statement.execute(sql);
+      connection.close();
     } catch (SQLException e) {
       e.printStackTrace();
       System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -170,6 +171,67 @@ public class Sqlite3 implements IDataAccessObject {
   // ================= Action Helper Methods =================
 
   /**
+   * Test if this action is active
+   * @return True or False for not active
+   */
+  public Boolean active(String actionName) {
+
+    String runPhase = queryRunPhase();
+
+    ArrayList<String> results = executeSqlQuery(
+      "SELECT active FROM actions WHERE action = " +
+        "'" + actionName + "' " +
+        "AND (run_phase = " +
+        "'" + runPhase + "' " +
+        "OR run_phase = 'ALL') " +
+        "AND active = " +
+        "'" + SQLITE_TRUE + "';"
+    );
+
+    return results.size() > 0;
+  }
+
+  /**
+   * Activate an action.
+   * @param actionName The name of the axction to activate
+   */
+  public void activate(String actionName) {
+    executeSqlStatement(
+      "UPDATE actions SET active = " +
+        "'" + SQLITE_TRUE + "'" +
+        "WHERE action = " +
+        "'" + actionName + "';"
+    );
+  }
+
+  /**
+   * Set the run state. The run states are an option group
+   * Hence the special method for setting these.
+   * EMERGENCY_SHUTDOWN
+   * NORMAL_SHUTDOWN
+   * RUNNING
+   * STARTING
+   * STOPPED
+   * @param runPhase Name of state to change to
+   */
+  public void changeRunPhase(String runPhase) {
+    // TODO Add check that passed state is valid
+    executeSqlStatement(
+      "UPDATE states SET state = " +
+        "'" + SQLITE_FALSE + "'" +
+        "WHERE state_name " +
+        "IN ('EMERGENCY_SHUTDOWN', 'NORMAL_SHUTDOWN', 'RUNNING', 'STARTING', 'STOPPED');"
+    );
+
+    executeSqlStatement(
+      "UPDATE states SET state = " +
+        "'" + SQLITE_TRUE + "'" +
+        "WHERE state_name = " +
+        "'" + runPhase + "';"
+    );
+  }
+
+  /**
    * Deactivate an action.
    * @param actionName The name of the action to deactivate
    */
@@ -183,22 +245,17 @@ public class Sqlite3 implements IDataAccessObject {
   }
 
   /**
-   * Test if this action is active
-   * @return True or False for not active
+   * Check if all "Before" actions have completed so that we can
+   * change state to running.
+   * @return True if not all complete
    */
-  public Boolean notActive(String actionName) {
-
-    String runPhase = queryRunPhase();
-
+  public Boolean beforeActionsComplete() {
     ArrayList<String> results = executeSqlQuery(
-      "SELECT active FROM actions WHERE action = " +
-        "'" + actionName + "' " +
-        "AND run_phase = " +
-        "'" + runPhase + "'" +
+      "SELECT * FROM actions WHERE action " +
+        "LIKE '%Before%' " +
         "AND active = " +
         "'" + SQLITE_TRUE + "';"
     );
-
     return results.size() == 0;
   }
 

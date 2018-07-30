@@ -9,10 +9,13 @@ import java.util.ArrayList;
  * as a pass through to the DAO in use
  */
 public interface IDataAccessLayer {
+  void activate(String actionName);
+  void changeRunPhase(String runPhase);
   void createTable(JSONObject table);
   void deactivate(String actionName);
   Boolean executeSqlStatement(String sql);
   ArrayList<String> executeSqlQuery(String sql);
-  Boolean notActive(String actionName);
+  Boolean active(String actionName);
+  Boolean beforeActionsComplete();
   String queryProperty(String property);
 }

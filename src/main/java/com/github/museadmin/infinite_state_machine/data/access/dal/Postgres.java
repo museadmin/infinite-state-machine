@@ -35,6 +35,28 @@ public class Postgres implements IDataAccessObject {
   }
 
   /**
+   * Activate an action.
+   * @param actionName The name of the axction to activate
+   */
+  public void activate(String actionName) {
+
+  }
+
+  /**
+   * Set the run state. The run states are an option group
+   * Hence the special method for setting these.
+   * EMERGENCY_SHUTDOWN
+   * NORMAL_SHUTDOWN
+   * RUNNING
+   * STARTING
+   * STOPPED
+   * @param runPhase Name of state to change to
+   */
+  public void changeRunPhase(String runPhase) {
+
+  }
+
+  /**
    * Create a unique database instance for the run
    * @param database Name of the DB
    */
@@ -90,7 +112,20 @@ public class Postgres implements IDataAccessObject {
       return rc;
   }
 
-  public Boolean notActive(String actionName) {
+  /**
+   * Test if this action is active
+   * @return True or False for not active
+   */
+  public Boolean active(String actionName) {
+    return true;
+  }
+
+  /**
+   * Check if all "Before" actions have completed so that we can
+   * change state to running.
+   * @return True if all complete
+   */
+  public Boolean beforeActionsComplete() {
     return true;
   }
 

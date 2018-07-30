@@ -4,7 +4,9 @@ import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLay
 
 public interface IAction {
   void execute();
-  Boolean notActive();
+  void activate(String actionName);
+  Boolean active();
+  Boolean beforeActionsComplete();
   void setDataAccessLayer(DataAccessLayer dataAccessLayer);
   void setRunRoot(String runRoot);
 }

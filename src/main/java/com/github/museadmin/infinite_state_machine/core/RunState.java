@@ -20,10 +20,10 @@ public class RunState {
   }
 
   // Runtime directory structure and files
-  public String dbFile;
   public String rdbms;
   public String runRoot;
-
+  // The array of actions
   public ArrayList<String> statements = new ArrayList<>();
 
+  public Boolean running = true;
 }

@@ -6,5 +6,8 @@ import java.util.ArrayList;
 
 public interface IActionPack {
   JSONObject getJsonObjectFromResourceFile(String fileName);
-  ArrayList getActionsFromActionPack(DataAccessLayer dataAccessLayer, String runRoot);
+  ArrayList getActionsFromActionPack(
+    DataAccessLayer dataAccessLayer,
+    String runRoot
+  );
 }

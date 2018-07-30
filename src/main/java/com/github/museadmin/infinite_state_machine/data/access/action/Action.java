@@ -14,7 +14,7 @@ public abstract class Action implements IAction{
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Action.class.getName());
 
-  public String actionName = getClass().getSimpleName();
+  private String actionName = getClass().getSimpleName();
   public DataAccessLayer dataAccessLayer;
   public String runRoot;
 
@@ -40,9 +40,32 @@ public abstract class Action implements IAction{
 
   /**
    * Activate an action.
+   * @param actionName The name of the axction to activate
    */
-  private void activate() {
+  public void activate(String actionName) {
+    dataAccessLayer.activate(actionName);
+  }
 
+  /**
+   * Test if this action is active
+   * @return True or False for not active
+   */
+  public Boolean active() {
+    return dataAccessLayer.active(actionName);
+  }
+
+  /**
+   * Set the run state. The run states are an option group
+   * Hence the special method for setting these.
+   * EMERGENCY_SHUTDOWN
+   * NORMAL_SHUTDOWN
+   * RUNNING
+   * STARTING
+   * STOPPED
+   * @param runPhase Name of state to change to
+   */
+  public void changeRunPhase(String runPhase) {
+    dataAccessLayer.changeRunPhase(runPhase);
   }
 
   /**
@@ -75,11 +98,12 @@ public abstract class Action implements IAction{
   }
 
   /**
-   * Test if this action is active
-   * @return True or False for not active
+   * Check if all "Before" actions have completed so that we can
+   * change state to running.
+   * @return True if all complete
    */
-  public Boolean notActive() {
-    return dataAccessLayer.notActive(actionName);
+  public Boolean beforeActionsComplete() {
+    return dataAccessLayer.beforeActionsComplete();
   }
 
   /**
