@@ -15,4 +15,7 @@ public interface IDataAccessObject {
   Boolean active(String actionName);
   Boolean beforeActionsComplete();
   String queryProperty(String property);
+  String queryRunPhase();
+  void setState(String stateName);
+  void unsetState(String stateName);
 }

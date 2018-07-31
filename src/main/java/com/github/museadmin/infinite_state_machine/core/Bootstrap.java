@@ -94,4 +94,12 @@ public class Bootstrap extends RunState {
     statements.forEach(statement -> dataAccessLayer.executeSqlStatement(statement));
   }
 
+  /**
+   * Return the active run phase
+   * @return The name of the active run phase
+   */
+  public String queryRunPhase() {
+    return dataAccessLayer.queryRunPhase();
+  }
+
 }

@@ -136,6 +136,35 @@ public class Postgres implements IDataAccessObject {
    */
   public String queryProperty(String property) {return "";}
 
+  /**
+   * Return the active run phase
+   * @return The name of the active run phase
+   */
+  public String queryRunPhase() {
+    return "";
+  }
+
+  /**
+   * Set a state in the state table
+   * @param stateName The name of the state
+   */
+  public void setState(String stateName) {
+
+  }
+
+  /**
+   * Unset a state in the state table
+   * @param stateName The name of the state
+   */
+  public void unsetState(String stateName) {
+
+  }
+
+  /**
+   * Execute a SQL query and return the results in an array list
+   * @param sql The query
+   * @return ArrayList holds the records returned
+   */
   public ArrayList<String> executeSqlQuery(String sql) {
     ArrayList<String> resultList = new ArrayList<>();
     return resultList;

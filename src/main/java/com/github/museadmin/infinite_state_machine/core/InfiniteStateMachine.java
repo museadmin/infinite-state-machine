@@ -45,7 +45,7 @@ public class InfiniteStateMachine extends Bootstrap {
    */
   public void execute() {
     int i = 0;
-    while (running) {
+    while (! queryRunPhase().equals("STOPPED")) {
       actions.get(i++).execute();
       if (i == actions.size()) {
         i = 0;

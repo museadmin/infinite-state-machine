@@ -9,4 +9,8 @@ public interface IAction {
   Boolean beforeActionsComplete();
   void setDataAccessLayer(DataAccessLayer dataAccessLayer);
   void setRunRoot(String runRoot);
+  String queryProperty(String property);
+  String queryRunPhase();
+  void setState(String stateName);
+  void unsetState(String stateName);
 }

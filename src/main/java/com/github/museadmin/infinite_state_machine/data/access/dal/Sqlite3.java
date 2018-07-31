@@ -277,13 +277,46 @@ public class Sqlite3 implements IDataAccessObject {
    * Return the active run phase
    * @return The name of the active run phase
    */
-  private String queryRunPhase() {
+  public String queryRunPhase() {
 
     ArrayList<String> results = executeSqlQuery(
-      "SELECT state_name FROM states WHERE state_name IN ('RUNNING','STARTING','STOPPED')" +
+      "SELECT state_name FROM states WHERE state_name IN (" +
+        "'RUNNING'," +
+        "'STARTING'," +
+        "'STOPPED'," +
+        "'NORMAL_SHUTDOWN'," +
+        "'EMERGENCY_SHUTDOWN')" +
         "AND state = '" + SQLITE_TRUE +"';"
     );
 
     return results.size() > 0 ? results.get(0) : "";
+  }
+
+  /**
+   * Set a state in the state table
+   * @param stateName The name of the state
+   */
+  public void setState(String stateName) {
+    executeSqlStatement(
+      "UPDATE states SET " +
+        "state = " +
+        "'" + SQLITE_TRUE + "'" +
+        "WHERE state_name = " +
+        "'" + stateName + "';"
+    );
+  }
+
+  /**
+   * Unset a state in the state table
+   * @param stateName The name of the state
+   */
+  public void unsetState(String stateName) {
+    executeSqlStatement(
+      "UPDATE states SET " +
+        "state = " +
+        "'" + SQLITE_FALSE + "'" +
+        "WHERE state_name = " +
+        "'" + stateName + "';"
+    );
   }
 }

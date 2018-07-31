@@ -55,6 +55,15 @@ public abstract class Action implements IAction{
   }
 
   /**
+   * Check if all "Before" actions have completed so that we can
+   * change state to running.
+   * @return True if all complete
+   */
+  public Boolean beforeActionsComplete() {
+    return dataAccessLayer.beforeActionsComplete();
+  }
+
+  /**
    * Set the run state. The run states are an option group
    * Hence the special method for setting these.
    * EMERGENCY_SHUTDOWN
@@ -98,21 +107,36 @@ public abstract class Action implements IAction{
   }
 
   /**
-   * Check if all "Before" actions have completed so that we can
-   * change state to running.
-   * @return True if all complete
-   */
-  public Boolean beforeActionsComplete() {
-    return dataAccessLayer.beforeActionsComplete();
-  }
-
-  /**
    * Query a property in the properties table
    * @param property Name of the property
    * @return value of the property
    */
   public String queryProperty(String property) {
     return dataAccessLayer.queryProperty(property);
+  }
+
+  /**
+   * Return the active run phase
+   * @return The name of the active run phase
+   */
+  public String queryRunPhase() {
+    return dataAccessLayer.queryRunPhase();
+  }
+
+  /**
+   * Set a state in the state table
+   * @param stateName The name of the state
+   */
+  public void setState(String stateName) {
+    dataAccessLayer.setState(stateName);
+  }
+
+  /**
+   * Unset a state in the state table
+   * @param stateName The name of the state
+   */
+  public void unsetState(String stateName) {
+    dataAccessLayer.unsetState(stateName);
   }
 
   /**

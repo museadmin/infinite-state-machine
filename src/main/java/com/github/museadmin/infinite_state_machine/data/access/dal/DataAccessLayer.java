@@ -88,6 +88,11 @@ public class DataAccessLayer implements IDataAccessLayer {
     return iDataAccessObject.queryProperty(property);
   }
 
+
+  public String queryRunPhase() {
+    return iDataAccessObject.queryRunPhase();
+  }
+
   /**
    * Set the run state. The run states are an option group
    * Hence the special method for setting these.
@@ -104,18 +109,18 @@ public class DataAccessLayer implements IDataAccessLayer {
 
   /**
    * Set a state in the state table
-   * @param state The name of the state
+   * @param stateName The name of the state
    */
-  public void setState(String state) {
-
+  public void setState(String stateName) {
+    iDataAccessObject.setState(stateName);
   }
 
   /**
    * Unset a state in the state table
-   * @param state The name of the state
+   * @param stateName The name of the state
    */
-  public void unsetState(String state) {
-
+  public void unsetState(String stateName) {
+    iDataAccessObject.unsetState(stateName);
   }
 
   // ================= Direct Database Manipulation =================
