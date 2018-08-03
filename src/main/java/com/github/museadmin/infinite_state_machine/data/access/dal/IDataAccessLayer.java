@@ -10,6 +10,7 @@ import java.util.ArrayList;
  */
 public interface IDataAccessLayer {
   void activate(String actionName);
+  Boolean afterActionsComplete();
   void changeRunPhase(String runPhase);
   void createTable(JSONObject table);
   void deactivate(String actionName);

@@ -55,6 +55,15 @@ public abstract class Action implements IAction{
   }
 
   /**
+   * Check if all "After" actions have completed so that we can
+   * change state to STOPPED.
+   * @return True if not all complete
+   */
+  public Boolean afterActionsComplete() {
+    return dataAccessLayer.afterActionsComplete();
+  }
+
+  /**
    * Check if all "Before" actions have completed so that we can
    * change state to running.
    * @return True if all complete

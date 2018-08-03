@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public interface IDataAccessObject {
   void activate(String actionName);
+  Boolean afterActionsComplete();
   void changeRunPhase(String runPhase);
   void createDatabase(String database);
   void createTable(JSONObject table);

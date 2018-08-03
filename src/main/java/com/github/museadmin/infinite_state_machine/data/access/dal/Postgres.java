@@ -43,6 +43,21 @@ public class Postgres implements IDataAccessObject {
   }
 
   /**
+   * Check if all "After" actions have completed so that we can
+   * change state to STOPPED.
+   * @return True if not all complete
+   */
+  public Boolean afterActionsComplete() {
+    ArrayList<String> results = executeSqlQuery(
+      "SELECT * FROM actions WHERE action " +
+        "LIKE '%After%' " +
+        "AND active = " +
+        "'" + "1" + "';"
+    );
+    return results.size() == 0;
+  }
+
+  /**
    * Set the run state. The run states are an option group
    * Hence the special method for setting these.
    * EMERGENCY_SHUTDOWN

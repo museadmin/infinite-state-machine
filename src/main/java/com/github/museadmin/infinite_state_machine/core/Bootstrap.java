@@ -67,7 +67,8 @@ public class Bootstrap extends RunState {
       dataAccessLayer,
       runRoot
     );
-    if (tmpActions != null){
+
+    if (tmpActions != null && tmpActions.size() > 0){
       tmpActions.forEach(
         action -> {
           if(actions.contains(action)) {
@@ -78,6 +79,9 @@ public class Bootstrap extends RunState {
           actions.add((IAction) action);
         }
       );
+
+    } else {
+      System.out.println("NO ACTIONS IMPORTED");
     }
   }
 

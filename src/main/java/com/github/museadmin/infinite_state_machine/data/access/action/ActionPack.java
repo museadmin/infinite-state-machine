@@ -78,7 +78,7 @@ public class ActionPack implements IActionPack {
     for (Class a : classes) {
       try {
         Action action = (Action) Class.forName(a.getName()).newInstance();
-        // Give the action access to the DAL and run time control directory
+        // Give the action access to the DAL and path to control directory
         action.setDataAccessLayer(dataAccessLayer);
         action.setRunRoot(runRoot);
         actions.add(action);
@@ -96,6 +96,7 @@ public class ActionPack implements IActionPack {
         System.exit(1);
       }
     }
+    System.out.println("Actions Size = " + actions.size());
     return actions;
   }
 

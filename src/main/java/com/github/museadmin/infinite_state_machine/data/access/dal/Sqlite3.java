@@ -205,6 +205,30 @@ public class Sqlite3 implements IDataAccessObject {
   }
 
   /**
+   * Check if all "After" actions have completed so that we can
+   * change state to STOPPED.
+   * @return True if not all complete
+   */
+  public Boolean afterActionsComplete() {
+
+    ArrayList<String> states = executeSqlQuery(
+      "SELECT state FROM states WHERE state_name IN " +
+        "('EMERGENCY_SHUTDOWN', 'NORMAL_SHUTDOWN');"
+    );
+
+    if (states.size() > 0 && states.get(0).equals(SQLITE_TRUE)) {
+      ArrayList<String>  results = executeSqlQuery(
+        "SELECT * FROM actions WHERE action " +
+          "LIKE '%After%' " +
+          "AND active = " +
+          "'" + SQLITE_TRUE + "';"
+      );
+      return results.size() == 0;
+    }
+    return false;
+  }
+
+  /**
    * Set the run state. The run states are an option group
    * Hence the special method for setting these.
    * EMERGENCY_SHUTDOWN
@@ -250,13 +274,21 @@ public class Sqlite3 implements IDataAccessObject {
    * @return True if not all complete
    */
   public Boolean beforeActionsComplete() {
-    ArrayList<String> results = executeSqlQuery(
-      "SELECT * FROM actions WHERE action " +
-        "LIKE '%Before%' " +
-        "AND active = " +
-        "'" + SQLITE_TRUE + "';"
+
+    ArrayList<String> states = executeSqlQuery(
+      "SELECT state FROM states WHERE state_name = 'STARTING';"
     );
-    return results.size() == 0;
+
+    if (states.size() > 0 && states.get(0).equals(SQLITE_TRUE)) {
+      ArrayList<String> results = executeSqlQuery(
+        "SELECT * FROM actions WHERE action " +
+          "LIKE '%Before%' " +
+          "AND active = " +
+          "'" + SQLITE_TRUE + "';"
+      );
+      return results.size() == 0;
+    }
+    return false;
   }
 
   /**
