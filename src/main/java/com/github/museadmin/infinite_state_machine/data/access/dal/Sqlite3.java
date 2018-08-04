@@ -211,21 +211,13 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public Boolean afterActionsComplete() {
 
-    ArrayList<String> states = executeSqlQuery(
-      "SELECT state FROM states WHERE state_name IN " +
-        "('EMERGENCY_SHUTDOWN', 'NORMAL_SHUTDOWN');"
+    ArrayList<String> results = executeSqlQuery(
+      "SELECT * FROM actions WHERE action " +
+        "LIKE '%After%' " +
+        "AND active = " +
+        "'" + SQLITE_TRUE + "';"
     );
-
-    if (states.size() > 0 && states.get(0).equals(SQLITE_TRUE)) {
-      ArrayList<String>  results = executeSqlQuery(
-        "SELECT * FROM actions WHERE action " +
-          "LIKE '%After%' " +
-          "AND active = " +
-          "'" + SQLITE_TRUE + "';"
-      );
-      return results.size() == 0;
-    }
-    return false;
+    return results.size() == 0;
   }
 
   /**
@@ -275,20 +267,13 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public Boolean beforeActionsComplete() {
 
-    ArrayList<String> states = executeSqlQuery(
-      "SELECT state FROM states WHERE state_name = 'STARTING';"
+    ArrayList <String> results = executeSqlQuery(
+      "SELECT * FROM actions WHERE action " +
+        "LIKE '%Before%' " +
+        "AND active = " +
+        "'" + SQLITE_TRUE + "';"
     );
-
-    if (states.size() > 0 && states.get(0).equals(SQLITE_TRUE)) {
-      ArrayList<String> results = executeSqlQuery(
-        "SELECT * FROM actions WHERE action " +
-          "LIKE '%Before%' " +
-          "AND active = " +
-          "'" + SQLITE_TRUE + "';"
-      );
-      return results.size() == 0;
-    }
-    return false;
+    return results.size() == 0;
   }
 
   /**
