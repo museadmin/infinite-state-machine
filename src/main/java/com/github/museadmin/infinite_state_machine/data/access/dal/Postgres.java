@@ -145,6 +145,18 @@ public class Postgres implements IDataAccessObject {
   }
 
   /**
+   * Insert a new property into the properties table
+   * @param property The name of the property
+   * @param value The value of the property
+   */
+  public void insertProperty(String property, String value) {
+    executeSqlStatement(
+      "INSERT INTO properties (property, value) values " +
+        "('" + property + "', '" + value + "');"
+    );
+  }
+
+  /**
    * Query a property in the properties table
    * @param property Name of the property
    * @return value of the property
@@ -165,6 +177,18 @@ public class Postgres implements IDataAccessObject {
    */
   public void setState(String stateName) {
 
+  }
+
+  /**
+   * Update an existing property in the properties table
+   * @param property The name of the property
+   * @param value The value of the property
+   */
+  public void updateProperty(String property, String value) {
+    executeSqlStatement(
+      "UPDATE properties SET " +
+        property + " = '" + value + "');"
+    );
   }
 
   /**

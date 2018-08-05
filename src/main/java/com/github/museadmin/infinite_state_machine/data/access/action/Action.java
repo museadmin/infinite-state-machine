@@ -38,21 +38,7 @@ public abstract class Action implements IAction{
 
   // ==================== Helper Methods for Actions =====================
 
-  /**
-   * Activate an action.
-   * @param actionName The name of the axction to activate
-   */
-  public void activate(String actionName) {
-    dataAccessLayer.activate(actionName);
-  }
-
-  /**
-   * Test if this action is active
-   * @return True or False for not active
-   */
-  public Boolean active() {
-    return dataAccessLayer.active(actionName);
-  }
+  // ================= Hooks =================
 
   /**
    * Check if all "After" actions have completed so that we can
@@ -72,32 +58,22 @@ public abstract class Action implements IAction{
     return dataAccessLayer.beforeActionsComplete();
   }
 
+  // ================= Activation =================
+
   /**
-   * Set the run state. The run states are an option group
-   * Hence the special method for setting these.
-   * EMERGENCY_SHUTDOWN
-   * NORMAL_SHUTDOWN
-   * RUNNING
-   * STARTING
-   * STOPPED
-   * @param runPhase Name of state to change to
+   * Test if this action is active
+   * @return True or False for not active
    */
-  public void changeRunPhase(String runPhase) {
-    dataAccessLayer.changeRunPhase(runPhase);
+  public Boolean active() {
+    return dataAccessLayer.active(actionName);
   }
 
   /**
-   * Create directory/s under the run root
-   * @param directory the directory or directories to append. Responsibility for ensuring
-   *                  the correct separator lies with the developer and is assumed to be
-   *                  correct.
+   * Activate an action.
+   * @param actionName The name of the axction to activate
    */
-  public void createRunDirectory(String directory) {
-
-    String path = runRoot + File.separator + directory;
-
-    File target = new File(path);
-    if (! target.isDirectory()) { target.mkdirs(); }
+  public void activate(String actionName) {
+    dataAccessLayer.activate(actionName);
   }
 
   /**
@@ -115,6 +91,41 @@ public abstract class Action implements IAction{
     dataAccessLayer.deactivate(actionFlag);
   }
 
+  // ================= Run phase Manipulation =================
+
+  /**
+   * Set the run state. The run states are an option group
+   * Hence the special method for setting these.
+   * EMERGENCY_SHUTDOWN
+   * NORMAL_SHUTDOWN
+   * RUNNING
+   * STARTING
+   * STOPPED
+   * @param runPhase Name of state to change to
+   */
+  public void changeRunPhase(String runPhase) {
+    dataAccessLayer.changeRunPhase(runPhase);
+  }
+
+  /**
+   * Return the active run phase
+   * @return The name of the active run phase
+   */
+  public String queryRunPhase() {
+    return dataAccessLayer.queryRunPhase();
+  }
+
+  // ================= Property Manipulation =================
+
+  /**
+   * Insert a new property into the properties table
+   * @param property The name of the property
+   * @param value The value of the property
+   */
+  public void insertProperty(String property, String value) {
+    dataAccessLayer.insertProperty(property, value);
+  }
+
   /**
    * Query a property in the properties table
    * @param property Name of the property
@@ -125,12 +136,15 @@ public abstract class Action implements IAction{
   }
 
   /**
-   * Return the active run phase
-   * @return The name of the active run phase
+   * Update an existing property in the properties table
+   * @param property The name of the property
+   * @param value The value of the property
    */
-  public String queryRunPhase() {
-    return dataAccessLayer.queryRunPhase();
+  public void updateProperty(String property, String value) {
+    dataAccessLayer.updateProperty(property, value);
   }
+
+  // ================= State Manipulation =================
 
   /**
    * Set a state in the state table
@@ -148,11 +162,23 @@ public abstract class Action implements IAction{
     dataAccessLayer.unsetState(stateName);
   }
 
-  /**
-   * Return the payload for this action read from the database.
-   */
-  public void payload() {
+  // ================= File Manipulation =================
 
+  /**
+   * Create directory/s under the run root
+   * @param directory the directory or directories to append. Responsibility for ensuring
+   *                  the correct separator lies with the developer and is assumed to be
+   *                  correct.
+   */
+  public String createRunDirectory(String directory) {
+
+    String path = runRoot + File.separator + directory;
+
+    File target = new File(path);
+    if (! target.isDirectory()) {
+      target.mkdirs();
+    }
+    return path;
   }
 
 

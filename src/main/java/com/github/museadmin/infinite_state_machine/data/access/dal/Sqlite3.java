@@ -170,6 +170,8 @@ public class Sqlite3 implements IDataAccessObject {
 
   // ================= Action Helper Methods =================
 
+  // ================= Activation =================
+
   /**
    * Test if this action is active
    * @return True or False for not active
@@ -205,6 +207,21 @@ public class Sqlite3 implements IDataAccessObject {
   }
 
   /**
+   * Deactivate an action.
+   * @param actionName The name of the action to deactivate
+   */
+  public void deactivate(String actionName) {
+    executeSqlStatement(
+      "UPDATE actions SET active = " +
+        "'" + SQLITE_FALSE + "' " +
+        "WHERE action = " +
+        "'" + actionName + "';"
+    );
+  }
+
+  // ================= Hooks =================
+
+  /**
    * Check if all "After" actions have completed so that we can
    * change state to STOPPED.
    * @return True if not all complete
@@ -218,46 +235,6 @@ public class Sqlite3 implements IDataAccessObject {
         "'" + SQLITE_TRUE + "';"
     );
     return results.size() == 0;
-  }
-
-  /**
-   * Set the run state. The run states are an option group
-   * Hence the special method for setting these.
-   * EMERGENCY_SHUTDOWN
-   * NORMAL_SHUTDOWN
-   * RUNNING
-   * STARTING
-   * STOPPED
-   * @param runPhase Name of state to change to
-   */
-  public void changeRunPhase(String runPhase) {
-    // TODO Add check that passed state is valid
-    executeSqlStatement(
-      "UPDATE states SET state = " +
-        "'" + SQLITE_FALSE + "'" +
-        "WHERE state_name " +
-        "IN ('EMERGENCY_SHUTDOWN', 'NORMAL_SHUTDOWN', 'RUNNING', 'STARTING', 'STOPPED');"
-    );
-
-    executeSqlStatement(
-      "UPDATE states SET state = " +
-        "'" + SQLITE_TRUE + "'" +
-        "WHERE state_name = " +
-        "'" + runPhase + "';"
-    );
-  }
-
-  /**
-   * Deactivate an action.
-   * @param actionName The name of the action to deactivate
-   */
-  public void deactivate(String actionName) {
-    executeSqlStatement(
-      "UPDATE actions SET active = " +
-        "'" + SQLITE_FALSE + "' " +
-        "WHERE action = " +
-        "'" + actionName + "';"
-    );
   }
 
   /**
@@ -276,6 +253,34 @@ public class Sqlite3 implements IDataAccessObject {
     return results.size() == 0;
   }
 
+  // ================= Property Manipulation =================
+
+  /**
+   * Insert a new property into the properties table
+   * @param property The name of the property
+   * @param value The value of the property
+   */
+  public void insertProperty(String property, String value) {
+    executeSqlStatement(
+      "INSERT INTO properties (property, value) values " +
+        "('" + property + "', '" + value + "');"
+    );
+  }
+
+  /**
+   * Update an existing property in the properties table
+   * @param property The name of the property
+   * @param value The value of the property
+   */
+  public void updateProperty(String property, String value) {
+    executeSqlStatement(
+      "UPDATE properties SET " +
+        "value = '" + value + "' " +
+        "WHERE property = " +
+        "'" + property + "';"
+    );
+  }
+
   /**
    * Query a property in the properties table
    * @param property Name of the property
@@ -290,6 +295,35 @@ public class Sqlite3 implements IDataAccessObject {
     return results.size() > 0 ? results.get(0) : "";
   }
 
+  // ================= Run phase Manipulation =================
+
+  /**
+   * Set the run state. The run states are an option group
+   * Hence the special method for setting these.
+   * EMERGENCY_SHUTDOWN
+   * NORMAL_SHUTDOWN
+   * RUNNING
+   * STARTING
+   * STOPPED
+   * @param runPhase Name of state to change to
+   */
+  public void changeRunPhase(String runPhase) {
+    // TODO Add check that passed state is valid
+    executeSqlStatement(
+      "UPDATE phases SET state = " +
+        "'" + SQLITE_FALSE + "'" +
+        "WHERE phase_name " +
+        "IN ('EMERGENCY_SHUTDOWN', 'NORMAL_SHUTDOWN', 'RUNNING', 'STARTING', 'STOPPED');"
+    );
+
+    executeSqlStatement(
+      "UPDATE phases SET state = " +
+        "'" + SQLITE_TRUE + "'" +
+        "WHERE phase_name = " +
+        "'" + runPhase + "';"
+    );
+  }
+
   /**
    * Return the active run phase
    * @return The name of the active run phase
@@ -297,17 +331,14 @@ public class Sqlite3 implements IDataAccessObject {
   public String queryRunPhase() {
 
     ArrayList<String> results = executeSqlQuery(
-      "SELECT state_name FROM states WHERE state_name IN (" +
-        "'RUNNING'," +
-        "'STARTING'," +
-        "'STOPPED'," +
-        "'NORMAL_SHUTDOWN'," +
-        "'EMERGENCY_SHUTDOWN')" +
-        "AND state = '" + SQLITE_TRUE +"';"
+      "SELECT phase_name FROM phases WHERE " +
+        "state = '" + SQLITE_TRUE +"';"
     );
 
     return results.size() > 0 ? results.get(0) : "";
   }
+
+  // ================= State Manipulation =================
 
   /**
    * Set a state in the state table

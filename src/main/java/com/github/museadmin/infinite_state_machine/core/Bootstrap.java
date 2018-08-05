@@ -30,7 +30,7 @@ public class Bootstrap extends RunState {
 
     // Create the root directory for this run
     runRoot = propertyCache.getProperty("runRoot") + File.separator +
-        epochSeconds + File.separator;
+        epochSeconds;
     File root = new File(runRoot);
     if (! root.isDirectory()) { root.mkdirs(); }
   }

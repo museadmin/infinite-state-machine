@@ -18,8 +18,10 @@ public interface IDataAccessLayer {
   ArrayList<String> executeSqlQuery(String sql);
   Boolean active(String actionName);
   Boolean beforeActionsComplete();
+  void insertProperty(String property, String value);
   String queryProperty(String property);
   String queryRunPhase();
   void setState(String stateName);
+  void updateProperty(String property, String value);
   void unsetState(String stateName);
 }

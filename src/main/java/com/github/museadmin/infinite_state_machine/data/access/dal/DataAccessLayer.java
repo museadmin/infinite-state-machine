@@ -29,7 +29,11 @@ public class DataAccessLayer implements IDataAccessLayer {
     if (rdbms.equalsIgnoreCase("SQLITE3")) {
 
       // Create the runtime dir for the sqlite3 db
-      String dbPath = runRoot + "control" + File.separator + "database";
+      String dbPath = runRoot +
+        File.separator +
+        "control" +
+        File.separator +
+        "database";
       File dir = new File (dbPath);
       if (! dir.isDirectory()) { dir.mkdirs(); }
       String dbFile = dbPath + File.separator + "ism.db";
@@ -46,13 +50,8 @@ public class DataAccessLayer implements IDataAccessLayer {
 
   // ================= Action Helper Methods =================
 
-  /**
-   * Activate an action.
-   * @param actionName The name of the action to activate
-   */
-  public void activate(String actionName) {
-    iDataAccessObject.activate(actionName);
-  }
+
+  // ================= Hooks =================
 
   /**
    * Check if all "After" actions have completed so that we can
@@ -72,13 +71,7 @@ public class DataAccessLayer implements IDataAccessLayer {
     return iDataAccessObject.beforeActionsComplete();
   }
 
-  /**
-   * Deactivate an action.
-   * @param actionName The name of the action to deactivate
-   */
-  public void deactivate(String actionName) {
-    iDataAccessObject.deactivate(actionName);
-  }
+  // ================= Activation =================
 
   /**
    * Test if this action is active
@@ -89,15 +82,27 @@ public class DataAccessLayer implements IDataAccessLayer {
   }
 
   /**
-   * Query a property in the properties table
-   * @param property Name of the property
-   * @return value of the property
+   * Activate an action.
+   * @param actionName The name of the action to activate
    */
-  public String queryProperty(String property) {
-    return iDataAccessObject.queryProperty(property);
+  public void activate(String actionName) {
+    iDataAccessObject.activate(actionName);
   }
 
+  /**
+   * Deactivate an action.
+   * @param actionName The name of the action to deactivate
+   */
+  public void deactivate(String actionName) {
+    iDataAccessObject.deactivate(actionName);
+  }
 
+  // ================= Run phase Manipulation =================
+
+  /**
+   * Return the active run phase
+   * @return The name of the active run phase
+   */
   public String queryRunPhase() {
     return iDataAccessObject.queryRunPhase();
   }
@@ -115,6 +120,37 @@ public class DataAccessLayer implements IDataAccessLayer {
   public void changeRunPhase(String runPhase) {
     iDataAccessObject.changeRunPhase(runPhase);
   }
+
+  // ================= Property Manipulation =================
+
+  /**
+   * Insert a new property into the properties table
+   * @param property The name of the property
+   * @param value The value of the property
+   */
+  public void insertProperty(String property, String value) {
+    iDataAccessObject.insertProperty(property, value);
+  }
+
+  /**
+   * Query a property in the properties table
+   * @param property Name of the property
+   * @return value of the property
+   */
+  public String queryProperty(String property) {
+    return iDataAccessObject.queryProperty(property);
+  }
+
+  /**
+   * Update an existing property in the properties table
+   * @param property The name of the property
+   * @param value The value of the property
+   */
+  public void updateProperty(String property, String value) {
+    iDataAccessObject.updateProperty(property, value);
+  }
+
+  // ================= State Manipulation =================
 
   /**
    * Set a state in the state table
