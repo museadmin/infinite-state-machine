@@ -52,4 +52,13 @@ public class InfiniteStateMachine extends Bootstrap {
         }
       }
   }
+
+  /**
+   * Query a property in the properties table
+   * @param property Name of the property
+   * @return value of the property
+   */
+  public String queryProperty(String property) {
+    return dataAccessLayer.queryProperty(property);
+  }
 }

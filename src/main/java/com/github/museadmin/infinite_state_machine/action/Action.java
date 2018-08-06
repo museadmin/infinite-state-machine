@@ -1,4 +1,4 @@
-package com.github.museadmin.infinite_state_machine.data.access.action;
+package com.github.museadmin.infinite_state_machine.action;
 
 import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import java.io.File;
  */
 public abstract class Action implements IAction{
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Action.class.getName());
+  public static final Logger LOGGER = LoggerFactory.getLogger(Action.class.getName());
 
   private String actionName = getClass().getSimpleName();
   public DataAccessLayer dataAccessLayer;
@@ -66,6 +66,15 @@ public abstract class Action implements IAction{
    */
   public Boolean active() {
     return dataAccessLayer.active(actionName);
+  }
+
+  /**
+   * Test if a named action is active
+   * @param action String name of action
+   * @return true if active
+   */
+  public boolean active(String action) {
+    return dataAccessLayer.active(action);
   }
 
   /**

@@ -1,4 +1,4 @@
-package com.github.museadmin.infinite_state_machine.data.access.action;
+package com.github.museadmin.infinite_state_machine.action;
 
 import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
 import org.json.JSONObject;

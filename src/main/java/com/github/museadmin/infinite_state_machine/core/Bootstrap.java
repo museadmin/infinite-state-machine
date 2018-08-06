@@ -1,7 +1,7 @@
 package com.github.museadmin.infinite_state_machine.core;
 
-import com.github.museadmin.infinite_state_machine.data.access.action.IAction;
-import com.github.museadmin.infinite_state_machine.data.access.action.IActionPack;
+import com.github.museadmin.infinite_state_machine.action.IAction;
+import com.github.museadmin.infinite_state_machine.action.IActionPack;
 import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
 import com.github.museadmin.infinite_state_machine.data.access.utils.JsonToSqlEtl;
 import org.json.JSONArray;

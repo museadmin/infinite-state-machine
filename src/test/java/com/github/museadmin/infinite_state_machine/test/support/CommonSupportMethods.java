@@ -13,7 +13,7 @@ public class CommonSupportMethods {
 
   /**
    * Create a one off test properties file
-   * @param file
+   * @param tmpFolder
    */
   public static String createTmpPropertiesFile(TemporaryFolder tmpFolder) {
 
@@ -43,5 +43,13 @@ public class CommonSupportMethods {
       }
     }
     return tmpProps;
+  }
+
+  /**
+   * Get the epoch seconds as a string
+   * @return The seconds in string form
+   */
+  public static String epochSeconds() {
+    return Long.toString(System.currentTimeMillis());
   }
 }
