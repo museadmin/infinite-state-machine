@@ -97,7 +97,7 @@ public class DataAccessLayer implements IDataAccessLayer {
     iDataAccessObject.deactivate(actionName);
   }
 
-  // ================= Run phase Manipulation =================
+  // ================= Run phase =================
 
   /**
    * Return the active run phase
@@ -121,7 +121,7 @@ public class DataAccessLayer implements IDataAccessLayer {
     iDataAccessObject.changeRunPhase(runPhase);
   }
 
-  // ================= Property Manipulation =================
+  // ================= Property =================
 
   /**
    * Insert a new property into the properties table
@@ -150,7 +150,7 @@ public class DataAccessLayer implements IDataAccessLayer {
     iDataAccessObject.updateProperty(property, value);
   }
 
-  // ================= State Manipulation =================
+  // ================= State =================
 
   /**
    * Set a state in the state table
@@ -166,6 +166,22 @@ public class DataAccessLayer implements IDataAccessLayer {
    */
   public void unsetState(String stateName) {
     iDataAccessObject.unsetState(stateName);
+  }
+
+  /**
+   * Insert a message into the database. Assumes valid json object.
+   * @param message JSONObject the message
+   */
+  public void insertMessage(JSONObject message) {
+    iDataAccessObject.insertMessage(message);
+  }
+
+  /**
+   * Retrieve an array of unprocessed messages form the database messages table
+   * @return ArrayList of messages as JSONObjects
+   */
+  public ArrayList<JSONObject> getUnprocessedMessages() {
+    return iDataAccessObject.getUnprocessedMessages();
   }
 
   // ================= Direct Database Manipulation =================

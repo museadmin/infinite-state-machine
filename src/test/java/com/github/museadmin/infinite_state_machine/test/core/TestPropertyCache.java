@@ -1,7 +1,7 @@
 package com.github.museadmin.infinite_state_machine.test.core;
 
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
-import com.github.museadmin.infinite_state_machine.test.support.CommonSupportMethods;
+import com.github.museadmin.infinite_state_machine.test.support.TestSupportMethods;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class TestPropertyCache {
   }
   @Test
   public void testImportPropertiesOverridesDefaults() {
-      String tmpProps = CommonSupportMethods.createTmpPropertiesFile(tmpFolder);
+      String tmpProps = TestSupportMethods.createTmpPropertiesFile(tmpFolder);
       propertyCache.importProperties(tmpProps);
       assertEquals(propertyCache.getProperty("rdbms"), "sqlite3");
   }

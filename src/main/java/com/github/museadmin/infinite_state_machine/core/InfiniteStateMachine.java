@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
  * The primary parent object that contains all of the components
  * of the infinite state machine
  */
-public class InfiniteStateMachine extends Bootstrap {
+public class InfiniteStateMachine extends Bootstrap implements Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InfiniteStateMachine.class.getName());
 
@@ -43,14 +43,15 @@ public class InfiniteStateMachine extends Bootstrap {
    * Run the state machine main control loop in a
    * background thread.
    */
-  public void execute() {
-      int i = 0;
-      while (! queryRunPhase().equals("STOPPED")) {
-        actions.get(i++).execute();
-        if (i == actions.size()) {
-          i = 0;
-        }
+  public void run() {
+
+    int i = 0;
+    while (! queryRunPhase().equals("STOPPED")) {
+      actions.get(i++).execute();
+      if (i == actions.size()) {
+        i = 0;
       }
+    }
   }
 
   /**
@@ -60,5 +61,13 @@ public class InfiniteStateMachine extends Bootstrap {
    */
   public String queryProperty(String property) {
     return dataAccessLayer.queryProperty(property);
+  }
+
+  /**
+   * Make the run phase available to caller
+   * @return String run phase
+   */
+  public String queryRunPhase() {
+    return dataAccessLayer.queryRunPhase();
   }
 }

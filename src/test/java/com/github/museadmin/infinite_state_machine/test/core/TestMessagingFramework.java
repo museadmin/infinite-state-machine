@@ -1,6 +1,7 @@
 package com.github.museadmin.infinite_state_machine.test.core;
 
 import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
+import com.github.museadmin.infinite_state_machine.test.support.TestSupportMethods;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,11 +15,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import static com.github.museadmin.infinite_state_machine.test.support.CommonSupportMethods.epochSeconds;
+import static org.junit.Assert.assertTrue;
 
-public class TestMessagingFramework {
+public class TestMessagingFramework extends TestSupportMethods {
 
-  protected InfiniteStateMachine infiniteStateMachine;
+  private Thread thread;
+  private String threadName = "testThread";
 
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
@@ -29,9 +31,12 @@ public class TestMessagingFramework {
   }
 
   @Test
-  public void testInboundMsgShutsDownIsm()  throws IOException {
+  public void testInboundMsgShutsDownIsm()  throws IOException, InterruptedException {
 
-    infiniteStateMachine.execute();
+    thread = new Thread (infiniteStateMachine, threadName);
+    thread.start ();
+
+    assertTrue(waitForRunPhase("RUNNING", 2L));
 
     JSONObject payload = new JSONObject()
       .put("dummy", "value");
@@ -42,14 +47,24 @@ public class TestMessagingFramework {
       .put("recipient", "localhost")
       .put("action", "ActionNormalShutdown")
       .put("payload", payload)
-      .put("sent", epochSeconds())
-      .put("received", "")
+      .put("sent", epochSecondsString())
+      .put("received", epochSecondsString())
       .put("direction", "in")
       .put("processed", "0").toString();
 
     writeMsgFile(message, "junit_1_localhost");
 
+    assertTrue(waitForRunPhase("STOPPED", 2L));
   }
+
+  /*
+  TODO needs a message factory that inserts incrementing id
+  returns message and file name
+   */
+//  @Test
+//  public void testCorruptInboundMessageIsRejected() {
+//
+//  }
 
   /**
    * Write a message to file
@@ -66,7 +81,7 @@ public class TestMessagingFramework {
 
     try (Writer writer = new BufferedWriter(new OutputStreamWriter(
       new FileOutputStream(msg_file), "utf-8"))) {
-      writer.write(message.toString());
+      writer.write(message);
     }
 
     try (Writer writer = new BufferedWriter(new OutputStreamWriter(

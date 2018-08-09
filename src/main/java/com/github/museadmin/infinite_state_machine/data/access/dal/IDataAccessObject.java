@@ -16,6 +16,8 @@ public interface IDataAccessObject {
   Boolean active(String actionName);
   Boolean beforeActionsComplete();
   void insertProperty(String property, String value);
+  void insertMessage(JSONObject message);
+  ArrayList<JSONObject> getUnprocessedMessages();
   String queryProperty(String property);
   String queryRunPhase();
   void setState(String stateName);

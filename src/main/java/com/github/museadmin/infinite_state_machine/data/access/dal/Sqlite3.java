@@ -115,6 +115,7 @@ public class Sqlite3 implements IDataAccessObject {
       ResultSet results = statement.executeQuery(sql);
 
       int columnCount = results.getMetaData().getColumnCount();
+      int recordIndex = 0;
 
       while (results.next()) {
         int i = 1;
@@ -253,7 +254,7 @@ public class Sqlite3 implements IDataAccessObject {
     return results.size() == 0;
   }
 
-  // ================= Property Manipulation =================
+  // ================= Property  =================
 
   /**
    * Insert a new property into the properties table
@@ -295,7 +296,7 @@ public class Sqlite3 implements IDataAccessObject {
     return results.size() > 0 ? results.get(0) : "";
   }
 
-  // ================= Run phase Manipulation =================
+  // ================= Run phase  =================
 
   /**
    * Set the run state. The run states are an option group
@@ -338,7 +339,7 @@ public class Sqlite3 implements IDataAccessObject {
     return results.size() > 0 ? results.get(0) : "";
   }
 
-  // ================= State Manipulation =================
+  // ================= State  =================
 
   /**
    * Set a state in the state table
@@ -367,4 +368,56 @@ public class Sqlite3 implements IDataAccessObject {
         "'" + stateName + "';"
     );
   }
+
+  // ================= Message  =================
+
+  /**
+   * Insert a message into the database. Assumes valid json object.
+   * @param message JSONObject the message
+   */
+  public void insertMessage(JSONObject message) {
+
+    executeSqlStatement(
+      "INSERT INTO messages " +
+        "(sender, " +
+        "sender_id, " +
+        "recipient, " +
+        "action, " +
+        "sent, " +
+        "received, " +
+        "direction, " +
+        "processed, " +
+        "payload) " +
+        "VALUES " +
+        "(" +
+        "'" + message.get("sender") + "', " +
+        "'" + message.get("sender_id") + "', " +
+        "'" + message.get("recipient") + "', " +
+        "'" + message.get("action") + "', " +
+        "'" + message.get("sent") + "', " +
+        "'" + message.get("received") + "', " +
+        "'" + message.get("direction") + "', " +
+        "'" + message.get("processed") + "', " +
+        "'" + message.get("payload") + "'" +
+        ");"
+    );
+  }
+
+  /**
+   * Retrieve an array of unprocessed messages form the database messages table
+   * @return ArrayList of messages as JSONObjects
+   */
+  public ArrayList<JSONObject> getUnprocessedMessages() {
+
+    ArrayList<JSONObject> messages = new ArrayList<JSONObject>();
+
+    executeSqlQuery(
+      "SELECT * from messages WHERE processed = '" + SQLITE_FALSE + "';"
+    ).forEach(record -> {
+      int x = 0;
+    });
+
+    return new ArrayList<JSONObject>();
+  }
+
 }

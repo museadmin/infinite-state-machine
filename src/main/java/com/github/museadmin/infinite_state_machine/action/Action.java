@@ -1,16 +1,21 @@
 package com.github.museadmin.infinite_state_machine.action;
 
 import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 /**
  * Parent for all actions.
  */
-public abstract class Action implements IAction{
+public abstract class Action implements IAction {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(Action.class.getName());
 
@@ -100,7 +105,7 @@ public abstract class Action implements IAction{
     dataAccessLayer.deactivate(actionFlag);
   }
 
-  // ================= Run phase Manipulation =================
+  // ================= Run phase =================
 
   /**
    * Set the run state. The run states are an option group
@@ -124,7 +129,7 @@ public abstract class Action implements IAction{
     return dataAccessLayer.queryRunPhase();
   }
 
-  // ================= Property Manipulation =================
+  // ================= Property =================
 
   /**
    * Insert a new property into the properties table
@@ -153,7 +158,7 @@ public abstract class Action implements IAction{
     dataAccessLayer.updateProperty(property, value);
   }
 
-  // ================= State Manipulation =================
+  // ================= State =================
 
   /**
    * Set a state in the state table
@@ -171,7 +176,25 @@ public abstract class Action implements IAction{
     dataAccessLayer.unsetState(stateName);
   }
 
-  // ================= File Manipulation =================
+  // ================= messaging =================
+
+  /**
+   * Insert a message into the database. Assumes valid json object.
+   * @param message JSONObject the message
+   */
+  public void insertMessage(JSONObject message) {
+    dataAccessLayer.insertMessage(message);
+  }
+
+  /**
+   * Retrieve an array of unprocessed messages form the database messages table
+   * @return ArrayList of messages as JSONObjects
+   */
+  public ArrayList<JSONObject> getUnprocessedMessages() {
+    return dataAccessLayer.getUnprocessedMessages();
+  }
+
+  // ================= File =================
 
   /**
    * Create directory/s under the run root
@@ -188,6 +211,32 @@ public abstract class Action implements IAction{
       target.mkdirs();
     }
     return path;
+  }
+
+  /**
+   * Read in a JSON file and return it as a JSONObject. This method resides
+   * here to ensure that the resource file read in is from the inheriting
+   * action pack, not the state machine resource directory.
+   * @param fileName The unqualified file name for the resource
+   * @return JSONObject containing the data
+   */
+  public JSONObject getJsonObjectFromFile(String fileName) {
+
+    String result = "";
+    try {
+      BufferedReader br = new BufferedReader(new FileReader(fileName));
+      StringBuilder sb = new StringBuilder();
+      String line = br.readLine();
+      while (line != null) {
+        sb.append(line);
+        line = br.readLine();
+      }
+      result = sb.toString();
+    } catch(IOException e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+    return new JSONObject(result);
   }
 
 

@@ -307,4 +307,45 @@ public class Postgres implements IDataAccessObject {
 
       return sbSql.toString();
   }
+
+  /**
+   * Insert a message into the database. Assumes valid json object.
+   * @param message JSONObject the message
+   */
+  public void insertMessage(JSONObject message) {
+
+    executeSqlStatement(
+      "INSERT INTO messages " +
+        "(sender, " +
+        "sender_id, " +
+        "recipient, " +
+        "action, " +
+        "sent, " +
+        "received, " +
+        "direction, " +
+        "processed, " +
+        "payload) " +
+        "VALUES " +
+        "(" +
+        "'" + message.get("sender") + "', " +
+        "'" + message.get("sender_id") + "', " +
+        "'" + message.get("recipient") + "', " +
+        "'" + message.get("action") + "', " +
+        "'" + message.get("sent") + "', " +
+        "'" + message.get("received") + "', " +
+        "'" + message.get("direction") + "', " +
+        "'" + message.get("processed") + "', " +
+        "'" + message.get("payload") + "'" +
+        ");"
+    );
+  }
+
+  /**
+   * Retrieve an array of unprocessed messages form the database messages table
+   * @return ArrayList of messages as JSONObjects
+   */
+  public ArrayList<JSONObject> getUnprocessedMessages() {
+    return new ArrayList<JSONObject>();
+  }
+
 }

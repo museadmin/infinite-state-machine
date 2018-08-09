@@ -1,5 +1,6 @@
 package com.github.museadmin.infinite_state_machine.test.support;
 
+import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
 import org.junit.rules.TemporaryFolder;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,7 +10,9 @@ import java.util.Properties;
 /**
  * Any common support methods applicable to the unit tests
  */
-public class CommonSupportMethods {
+public class TestSupportMethods {
+
+  public static InfiniteStateMachine infiniteStateMachine;
 
   /**
    * Create a one off test properties file
@@ -46,10 +49,40 @@ public class CommonSupportMethods {
   }
 
   /**
+   * Get the epoch milliseconds as a string
+   * @return The seconds in string form
+   */
+  public static String epochMilliSeconds() {
+    return Long.toString(System.currentTimeMillis());
+  }
+
+  /**
    * Get the epoch seconds as a string
    * @return The seconds in string form
    */
-  public static String epochSeconds() {
-    return Long.toString(System.currentTimeMillis());
+  public static String epochSecondsString() {
+    return Long.toString(java.time.Instant.now().getEpochSecond());
+  }
+
+  /**
+   * Get the epoch seconds as a Long
+   * @return The seconds in Long form
+   */
+  public static Long epochSecondsLong() {
+    return java.time.Instant.now().getEpochSecond();
+  }
+
+  public static Boolean waitForRunPhase(String phase, Long time) throws InterruptedException {
+
+    Long startTime = java.time.Instant.now().getEpochSecond();
+    Long timeOut = startTime + time;
+
+    while(! infiniteStateMachine.queryRunPhase().equals(phase)) {
+      Thread.sleep(100);
+      if (java.time.Instant.now().getEpochSecond() >= timeOut) {
+        return false;
+      }
+    }
+    return true;
   }
 }
