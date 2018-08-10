@@ -1,6 +1,7 @@
 package com.github.museadmin.infinite_state_machine.data.access.dal;
 
-import com.github.museadmin.infinite_state_machine.data.access.utils.InvalidRunPhase;
+import com.github.museadmin.infinite_state_machine.data.access.utils.InvalidDefaultTypeException;
+import com.github.museadmin.infinite_state_machine.data.access.utils.InvalidRunPhaseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -145,9 +146,21 @@ public class Sqlite3 implements IDataAccessObject {
         sbSql.append(" NOT NULL");
       }
 
-      String def = col.getString("default");
-      if (! def.isEmpty()) {
-        sbSql.append(" DEFAULT '" + def + "'");
+      JSONObject def = col.getJSONObject("default");
+      switch (def.getString("type")) {
+        case "string" :
+          if (! def.getString("value").isEmpty()) {
+            sbSql.append(String.format(" DEFAULT '%s'", def.getString("value")));
+          }
+          break;
+        case "function" :
+          if (! def.getString("value").isEmpty()) {
+            sbSql.append(String.format(" DEFAULT %s", def.getString("value")));
+          }
+          break;
+        default :
+          throw new InvalidDefaultTypeException(
+            String.format("Invalid default type for field (%s)", def.getString("type")));
       }
 
       if (col.getBoolean("primary_key")) {
@@ -323,7 +336,7 @@ public class Sqlite3 implements IDataAccessObject {
           "'" + runPhase + "';"
       );
     } else {
-      throw new InvalidRunPhase(String.format("Invalid Run Phase passed (%s)", runPhase));
+      throw new InvalidRunPhaseException(String.format("Invalid Run Phase passed (%s)", runPhase));
     }
   }
 
@@ -375,7 +388,6 @@ public class Sqlite3 implements IDataAccessObject {
         "recipient, " +
         "action, " +
         "sent, " +
-        "received, " +
         "direction, " +
         "processed, " +
         "payload) " +
@@ -386,7 +398,6 @@ public class Sqlite3 implements IDataAccessObject {
         "'" + message.get("recipient") + "', " +
         "'" + message.get("action") + "', " +
         "'" + message.get("sent") + "', " +
-        "'" + message.get("received") + "', " +
         "'" + message.get("direction") + "', " +
         "'" + message.get("processed") + "', " +
         "'" + message.get("payload") + "'" +

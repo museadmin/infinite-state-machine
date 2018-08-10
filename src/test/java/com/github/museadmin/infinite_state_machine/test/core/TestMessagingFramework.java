@@ -48,7 +48,7 @@ public class TestMessagingFramework extends TestSupportMethods {
       .put("action", "ActionNormalShutdown")
       .put("payload", payload)
       .put("sent", epochSecondsString())
-      .put("received", epochSecondsString())
+      .put("received", "")
       .put("direction", "in")
       .put("processed", "0").toString();
 
