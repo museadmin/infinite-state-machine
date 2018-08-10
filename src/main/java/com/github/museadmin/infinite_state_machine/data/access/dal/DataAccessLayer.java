@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * The DAL mirrors the methods in each DAO and acts
  * as a pass through to the DAO in use
  */
-public class DataAccessLayer implements IDataAccessLayer {
+public class DataAccessLayer implements IDataAccessObject {
 
   IDataAccessObject iDataAccessObject;
   PropertyCache propertyCache;
@@ -41,37 +41,42 @@ public class DataAccessLayer implements IDataAccessLayer {
       // Create the database itself
       iDataAccessObject = new Sqlite3(dbFile);
 
-    } else if (rdbms.equalsIgnoreCase("POSTGRES")) {
-      iDataAccessObject = new Postgres(propertyCache, epochSeconds);
+//    } else if (rdbms.equalsIgnoreCase("POSTGRES")) {
+//      iDataAccessObject = new Postgres(propertyCache, epochSeconds);
     } else {
       throw new RuntimeException("Failed to identify RDBMS in use from property file");
     }
   }
 
-  // ================= Action Helper Methods =================
-
-
-  // ================= Hooks =================
+  // ================= DB =================
 
   /**
-   * Check if all "After" actions have completed so that we can
-   * change state to STOPPED.
-   * @return True if not all complete
+   * Execute a SQL query and return the results in an array list
+   * @param sql The query
+   * @return ArrayList holds the records returned
    */
-  public Boolean afterActionsComplete() {
-    return iDataAccessObject.afterActionsComplete();
+  public ArrayList<JSONObject> executeSqlQuery(String sql) {
+    return iDataAccessObject.executeSqlQuery(sql);
   }
 
   /**
-   * Check if all "Before" actions have completed so that we can
-   * change state to running.
-   * @return True if all complete
+   * Executes a SQL statement
+   * @param sql The statement to execute
+   * @return True or False for success or failure
    */
-  public Boolean beforeActionsComplete() {
-    return iDataAccessObject.beforeActionsComplete();
+  public Boolean executeSqlStatement(String sql) {
+    return iDataAccessObject.executeSqlStatement(sql);
   }
 
-  // ================= Activation =================
+  /**
+   * Create a database table using a JSON definition
+   * @param table JSONObject
+   */
+  public void createTable(JSONObject table) {
+    iDataAccessObject.createTable(table);
+  }
+
+  // ================= Action =================
 
   /**
    * Test if this action is active
@@ -97,28 +102,41 @@ public class DataAccessLayer implements IDataAccessLayer {
     iDataAccessObject.deactivate(actionName);
   }
 
-  // ================= Run phase =================
-
   /**
-   * Return the active run phase
-   * @return The name of the active run phase
+   * Clear the payload for an action prior to deactivation
+   * @param actionName The name of the action
    */
-  public String queryRunPhase() {
-    return iDataAccessObject.queryRunPhase();
+  public void clearPayload(String actionName) {
+    iDataAccessObject.clearPayload(actionName);
   }
 
   /**
-   * Set the run state. The run states are an option group
-   * Hence the special method for setting these.
-   * EMERGENCY_SHUTDOWN
-   * NORMAL_SHUTDOWN
-   * RUNNING
-   * STARTING
-   * STOPPED
-   * @param runPhase Name of state to change to
+   * Set the payload for an action
+   * @param actionName The name of the action
+   * @param payload The action's payload
    */
-  public void changeRunPhase(String runPhase) {
-    iDataAccessObject.changeRunPhase(runPhase);
+  public void updatePayload(String actionName, String payload) {
+    iDataAccessObject.updatePayload(actionName, payload);
+  }
+
+  // ================= Hooks =================
+
+  /**
+   * Check if all "After" actions have completed so that we can
+   * change state to STOPPED.
+   * @return True if not all complete
+   */
+  public Boolean afterActionsComplete() {
+    return iDataAccessObject.afterActionsComplete();
+  }
+
+  /**
+   * Check if all "Before" actions have completed so that we can
+   * change state to running.
+   * @return True if all complete
+   */
+  public Boolean beforeActionsComplete() {
+    return iDataAccessObject.beforeActionsComplete();
   }
 
   // ================= Property =================
@@ -150,6 +168,30 @@ public class DataAccessLayer implements IDataAccessLayer {
     iDataAccessObject.updateProperty(property, value);
   }
 
+  // ================= Run phase  =================
+
+  /**
+   * Return the active run phase
+   * @return The name of the active run phase
+   */
+  public String queryRunPhase() {
+    return iDataAccessObject.queryRunPhase();
+  }
+
+  /**
+   * Set the run state. The run states are an option group
+   * Hence the special method for setting these.
+   * EMERGENCY_SHUTDOWN
+   * NORMAL_SHUTDOWN
+   * RUNNING
+   * STARTING
+   * STOPPED
+   * @param runPhase Name of state to change to
+   */
+  public void updateRunPhase(String runPhase) {
+    iDataAccessObject.updateRunPhase(runPhase);
+  }
+
   // ================= State =================
 
   /**
@@ -168,6 +210,7 @@ public class DataAccessLayer implements IDataAccessLayer {
     iDataAccessObject.unsetState(stateName);
   }
 
+  // ================= Message  =================
   /**
    * Insert a message into the database. Assumes valid json object.
    * @param message JSONObject the message
@@ -184,32 +227,11 @@ public class DataAccessLayer implements IDataAccessLayer {
     return iDataAccessObject.getUnprocessedMessages();
   }
 
-  // ================= Direct Database Manipulation =================
-
   /**
-   * Execute a SQL query and return the results in an array list
-   * @param sql The query
-   * @return ArrayList holds the records returned
+   * Set the processed field true of a message record
+   * @param id The ID (PK) of the record
    */
-  public ArrayList<String> executeSqlQuery(String sql) {
-    return iDataAccessObject.executeSqlQuery(sql);
+  public void markMessageProcessed(Integer id) {
+    iDataAccessObject.markMessageProcessed(id);
   }
-
-  /**
-   * Executes a SQL statement
-   * @param sql The statement to execute
-   * @return True or False for success or failure
-   */
-  public Boolean executeSqlStatement(String sql) {
-    return iDataAccessObject.executeSqlStatement(sql);
-  }
-
-  /**
-   * Create a database table using a JSON definition
-   * @param table JSONObject
-   */
-  public void createTable(JSONObject table) {
-    iDataAccessObject.createTable(table);
-  }
-
 }

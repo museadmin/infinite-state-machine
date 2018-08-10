@@ -1,14 +1,17 @@
 package com.github.museadmin.infinite_state_machine.data.access.dal;
 
+import com.github.museadmin.infinite_state_machine.data.access.utils.InvalidRunPhase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Data Access Object for when using Sqlite3
@@ -19,7 +22,7 @@ public class Sqlite3 implements IDataAccessObject {
   public String SQLITE_TRUE = "1";
   public String SQLITE_FALSE = "0";
 
-  // ================= Setup Methods =================
+  // ================= Setup =================
 
   /**
    * Constructor attempts to create a new database
@@ -36,6 +39,78 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public void createDatabase(String database) {
     getConnection(database);
+  }
+
+  // ================= DB =================
+
+  /**
+   * Execute a SQL query and return the results in an array list
+   * @param sql The query
+   * @return ArrayList holds the records returned
+   */
+  public ArrayList<JSONObject> executeSqlQuery(String sql) {
+
+    ArrayList<JSONObject> rows = new ArrayList<>();
+
+    try {
+      Connection connection = getConnection(database);
+      Statement statement = connection.createStatement();
+      ResultSet rs = statement.executeQuery(sql);
+      ResultSetMetaData rsm = rs.getMetaData();
+      int columnCount = rsm.getColumnCount();
+
+      while (rs.next()) {
+        int i = 1;
+        JSONObject row = new JSONObject();
+        while(i <= columnCount) {
+          row.put(rsm.getColumnName(i), rs.getString(i++));
+        }
+        rows.add(row);
+      }
+      connection.close();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      System.err.println(e.getClass().getName() + ": " + e.getMessage());
+      System.exit(1);
+    }
+    return rows;
+  }
+
+  /**
+   * Executes a SQL statement
+   * @param sql The statement to execute
+   * @return True or False for success or failure
+   */
+  public Boolean executeSqlStatement(String sql)  {
+    Boolean rc = false;
+    try {
+      Connection connection = getConnection(database);
+      Statement statement = connection.createStatement();
+      rc = statement.execute(sql);
+      connection.close();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      System.err.println(e.getClass().getName() + ": " + e.getMessage());
+      System.exit(1);
+    }
+    return rc;
+  }
+
+  /**
+   * Return a connection to the sqlite3 database
+   * @param database The fully qualified path to the database
+   * @return Connection
+   */
+  private Connection getConnection(String database){
+    Connection connection = null;
+    try {
+      connection = DriverManager.getConnection("jdbc:sqlite:" + database);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      System.err.println(e.getClass().getName() + ": " + e.getMessage());
+      System.exit(1);
+    }
+    return connection;
   }
 
   /**
@@ -98,80 +173,7 @@ public class Sqlite3 implements IDataAccessObject {
     return sbSql.toString();
   }
 
-  // ================= DB Query Methods =================
-
-  /**
-   * Execute a SQL query and return the results in an array list
-   * @param sql The query
-   * @return ArrayList holds the records returned
-   */
-  public ArrayList<String> executeSqlQuery(String sql) {
-
-    ArrayList<String> resultList = new ArrayList<>();
-
-    try {
-      Connection connection = getConnection(database);
-      Statement statement = connection.createStatement();
-      ResultSet results = statement.executeQuery(sql);
-
-      int columnCount = results.getMetaData().getColumnCount();
-      int recordIndex = 0;
-
-      while (results.next()) {
-        int i = 1;
-        while(i <= columnCount) {
-          resultList.add(results.getString(i++));
-        }
-      }
-      connection.close();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      System.err.println(e.getClass().getName() + ": " + e.getMessage());
-      System.exit(1);
-    }
-    return resultList;
-  }
-
-  /**
-   * Executes a SQL statement
-   * @param sql The statement to execute
-   * @return True or False for success or failure
-   */
-  public Boolean executeSqlStatement(String sql)  {
-    Boolean rc = false;
-    try {
-      Connection connection = getConnection(database);
-      Statement statement = connection.createStatement();
-      rc = statement.execute(sql);
-      connection.close();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      System.err.println(e.getClass().getName() + ": " + e.getMessage());
-      System.exit(1);
-    }
-    return rc;
-  }
-
-  /**
-   * Return a connection to the sqlite3 database
-   * @param database The fully qualified path to the database
-   * @return Connection
-   */
-  private Connection getConnection(String database){
-    Connection connection = null;
-    try {
-      connection = DriverManager.getConnection("jdbc:sqlite:" + database);
-    } catch (SQLException e) {
-      e.printStackTrace();
-      System.err.println(e.getClass().getName() + ": " + e.getMessage());
-      System.exit(1);
-    }
-    return connection;
-  }
-
-  // ================= Action Helper Methods =================
-
-  // ================= Activation =================
+  // ================= Action =================
 
   /**
    * Test if this action is active
@@ -180,17 +182,10 @@ public class Sqlite3 implements IDataAccessObject {
   public Boolean active(String actionName) {
 
     String runPhase = queryRunPhase();
-
-    ArrayList<String> results = executeSqlQuery(
-      "SELECT active FROM actions WHERE action = " +
-        "'" + actionName + "' " +
-        "AND (run_phase = " +
-        "'" + runPhase + "' " +
-        "OR run_phase = 'ALL') " +
-        "AND active = " +
-        "'" + SQLITE_TRUE + "';"
+    ArrayList<JSONObject> results = executeSqlQuery(
+      String.format("SELECT active FROM actions WHERE action = '%s' AND (run_phase = '%s' OR run_phase = 'ALL') " +
+        "AND active = '%s';", actionName, runPhase, SQLITE_TRUE)
     );
-
     return results.size() > 0;
   }
 
@@ -200,10 +195,7 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public void activate(String actionName) {
     executeSqlStatement(
-      "UPDATE actions SET active = " +
-        "'" + SQLITE_TRUE + "'" +
-        "WHERE action = " +
-        "'" + actionName + "';"
+      String.format("UPDATE actions SET active = '%s'WHERE action = '%s';", SQLITE_TRUE, actionName)
     );
   }
 
@@ -213,10 +205,27 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public void deactivate(String actionName) {
     executeSqlStatement(
-      "UPDATE actions SET active = " +
-        "'" + SQLITE_FALSE + "' " +
-        "WHERE action = " +
-        "'" + actionName + "';"
+      String.format("UPDATE actions SET active = '%s' WHERE action = '%s';", SQLITE_FALSE, actionName)
+    );
+  }
+
+  /**
+   * Clear the payload for an action prior to deactivation
+   * @param actionName The name of the action
+   */
+  public void clearPayload(String actionName) {
+    executeSqlStatement(
+      String.format("UPDATE actions SET payload = '' WHERE action = '%s';", actionName)
+    );
+  }
+
+  /**
+   * Update the payload for an action
+   * @param actionName The name of the action
+   */
+  public void updatePayload(String actionName, String payload) {
+    executeSqlStatement(
+      String.format("UPDATE actions SET payload = '%s'WHERE action = '%s';", payload, actionName)
     );
   }
 
@@ -229,11 +238,8 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public Boolean afterActionsComplete() {
 
-    ArrayList<String> results = executeSqlQuery(
-      "SELECT * FROM actions WHERE action " +
-        "LIKE '%After%' " +
-        "AND active = " +
-        "'" + SQLITE_TRUE + "';"
+    ArrayList<JSONObject> results = executeSqlQuery(
+      String.format("SELECT * FROM actions WHERE action LIKE '%%After%%' AND active = '%s';", SQLITE_TRUE)
     );
     return results.size() == 0;
   }
@@ -245,11 +251,8 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public Boolean beforeActionsComplete() {
 
-    ArrayList <String> results = executeSqlQuery(
-      "SELECT * FROM actions WHERE action " +
-        "LIKE '%Before%' " +
-        "AND active = " +
-        "'" + SQLITE_TRUE + "';"
+    ArrayList <JSONObject> results = executeSqlQuery(
+      String.format("SELECT * FROM actions WHERE action LIKE '%%Before%%' AND active = '%s';", SQLITE_TRUE)
     );
     return results.size() == 0;
   }
@@ -263,8 +266,7 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public void insertProperty(String property, String value) {
     executeSqlStatement(
-      "INSERT INTO properties (property, value) values " +
-        "('" + property + "', '" + value + "');"
+      String.format("INSERT INTO properties (property, value) values ('%s', '%s');", property, value)
     );
   }
 
@@ -275,10 +277,7 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public void updateProperty(String property, String value) {
     executeSqlStatement(
-      "UPDATE properties SET " +
-        "value = '" + value + "' " +
-        "WHERE property = " +
-        "'" + property + "';"
+      String.format("UPDATE properties SET value = '%s' WHERE property = '%s';", value, property)
     );
   }
 
@@ -289,11 +288,10 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public String queryProperty(String property) {
 
-    ArrayList<String> results = executeSqlQuery(
-      "SELECT value FROM properties WHERE property = " +
-        "'" + property + "';"
+    ArrayList<JSONObject> results = executeSqlQuery(
+      String.format("SELECT value FROM properties WHERE property = '%s';", property)
     );
-    return results.size() > 0 ? results.get(0) : "";
+    return results.size() > 0 ? results.get(0).get("value").toString() : "";
   }
 
   // ================= Run phase  =================
@@ -308,21 +306,25 @@ public class Sqlite3 implements IDataAccessObject {
    * STOPPED
    * @param runPhase Name of state to change to
    */
-  public void changeRunPhase(String runPhase) {
-    // TODO Add check that passed state is valid
-    executeSqlStatement(
-      "UPDATE phases SET state = " +
-        "'" + SQLITE_FALSE + "'" +
-        "WHERE phase_name " +
-        "IN ('EMERGENCY_SHUTDOWN', 'NORMAL_SHUTDOWN', 'RUNNING', 'STARTING', 'STOPPED');"
-    );
+  public void updateRunPhase(String runPhase) {
 
-    executeSqlStatement(
-      "UPDATE phases SET state = " +
-        "'" + SQLITE_TRUE + "'" +
-        "WHERE phase_name = " +
-        "'" + runPhase + "';"
-    );
+    if (Arrays.asList("EMERGENCY_SHUTDOWN", "NORMAL_SHUTDOWN", "RUNNING", "STARTING", "STOPPED").contains(runPhase)) {
+      executeSqlStatement(
+        "UPDATE phases SET state = " +
+          "'" + SQLITE_FALSE + "'" +
+          "WHERE phase_name " +
+          "IN ('EMERGENCY_SHUTDOWN', 'NORMAL_SHUTDOWN', 'RUNNING', 'STARTING', 'STOPPED');"
+      );
+
+      executeSqlStatement(
+        "UPDATE phases SET state = " +
+          "'" + SQLITE_TRUE + "'" +
+          "WHERE phase_name = " +
+          "'" + runPhase + "';"
+      );
+    } else {
+      throw new InvalidRunPhase(String.format("Invalid Run Phase passed (%s)", runPhase));
+    }
   }
 
   /**
@@ -330,13 +332,10 @@ public class Sqlite3 implements IDataAccessObject {
    * @return The name of the active run phase
    */
   public String queryRunPhase() {
-
-    ArrayList<String> results = executeSqlQuery(
-      "SELECT phase_name FROM phases WHERE " +
-        "state = '" + SQLITE_TRUE +"';"
+    ArrayList<JSONObject> results = executeSqlQuery(
+      String.format("SELECT phase_name FROM phases WHERE state = '%s';", SQLITE_TRUE)
     );
-
-    return results.size() > 0 ? results.get(0) : "";
+    return results.size() > 0 ? results.get(0).get("phase_name").toString() : "";
   }
 
   // ================= State  =================
@@ -347,11 +346,7 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public void setState(String stateName) {
     executeSqlStatement(
-      "UPDATE states SET " +
-        "state = " +
-        "'" + SQLITE_TRUE + "'" +
-        "WHERE state_name = " +
-        "'" + stateName + "';"
+      String.format("UPDATE states SET state = '%s'WHERE state_name = '%s';", SQLITE_TRUE, stateName)
     );
   }
 
@@ -361,11 +356,7 @@ public class Sqlite3 implements IDataAccessObject {
    */
   public void unsetState(String stateName) {
     executeSqlStatement(
-      "UPDATE states SET " +
-        "state = " +
-        "'" + SQLITE_FALSE + "'" +
-        "WHERE state_name = " +
-        "'" + stateName + "';"
+      String.format("UPDATE states SET state = '%s'WHERE state_name = '%s';", SQLITE_FALSE, stateName)
     );
   }
 
@@ -408,16 +399,19 @@ public class Sqlite3 implements IDataAccessObject {
    * @return ArrayList of messages as JSONObjects
    */
   public ArrayList<JSONObject> getUnprocessedMessages() {
+    return executeSqlQuery(
+      String.format("SELECT * from messages WHERE processed = '%s';", SQLITE_FALSE)
+    );
+  }
 
-    ArrayList<JSONObject> messages = new ArrayList<JSONObject>();
-
-    executeSqlQuery(
-      "SELECT * from messages WHERE processed = '" + SQLITE_FALSE + "';"
-    ).forEach(record -> {
-      int x = 0;
-    });
-
-    return new ArrayList<JSONObject>();
+  /**
+   * Set the processed field true of a message record
+   * @param id The ID (PK) of the record
+   */
+  public void markMessageProcessed(Integer id) {
+    executeSqlStatement(
+      String.format("UPDATE messages SET processed = '%s' WHERE id = %d;", SQLITE_TRUE, id)
+    );
   }
 
 }

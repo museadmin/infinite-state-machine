@@ -105,6 +105,23 @@ public abstract class Action implements IAction {
     dataAccessLayer.deactivate(actionFlag);
   }
 
+  /**
+   * Clear the payload for an action prior to deactivation
+   * @param actionName The name of the action
+   */
+  public void clearPayload(String actionName) {
+    dataAccessLayer.clearPayload(actionName);
+  }
+
+  /**
+   * Set the payload for an action
+   * @param actionName The name of the action
+   * @param payload The action's payload
+   */
+  public void updatePayload(String actionName, String payload) {
+    dataAccessLayer.updatePayload(actionName, payload);
+  }
+
   // ================= Run phase =================
 
   /**
@@ -117,8 +134,8 @@ public abstract class Action implements IAction {
    * STOPPED
    * @param runPhase Name of state to change to
    */
-  public void changeRunPhase(String runPhase) {
-    dataAccessLayer.changeRunPhase(runPhase);
+  public void updateRunPhase(String runPhase) {
+    dataAccessLayer.updateRunPhase(runPhase);
   }
 
   /**
@@ -239,5 +256,11 @@ public abstract class Action implements IAction {
     return new JSONObject(result);
   }
 
-
+  /**
+   * Set the processed field true of a message record
+   * @param id The ID (PK) of the record
+   */
+  public void markMessageProcessed(Integer id) {
+    dataAccessLayer.markMessageProcessed(id);
+  }
 }
