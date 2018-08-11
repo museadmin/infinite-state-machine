@@ -1,6 +1,7 @@
 package com.github.museadmin.infinite_state_machine.test.core;
 
 import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
+import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
 import com.github.museadmin.infinite_state_machine.test.support.TestSupportMethods;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -20,14 +21,16 @@ import static org.junit.Assert.assertTrue;
 public class TestMessagingFramework extends TestSupportMethods {
 
   private Thread thread;
-  private String threadName = "testThread";
+  private String threadName = "UnitTestThread";
 
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   @Before
   public void setup() {
+    ismCoreActionPack = new ISMCoreActionPack();
     infiniteStateMachine = new InfiniteStateMachine();
+    infiniteStateMachine.importActionPack(ismCoreActionPack);
   }
 
   @Test

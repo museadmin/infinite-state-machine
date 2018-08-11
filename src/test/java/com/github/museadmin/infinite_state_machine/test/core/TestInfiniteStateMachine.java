@@ -1,6 +1,7 @@
 package com.github.museadmin.infinite_state_machine.test.core;
 
 import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
+import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
 import com.github.museadmin.infinite_state_machine.test.support.TestSupportMethods;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,7 +20,9 @@ public class TestInfiniteStateMachine {
 
   @Before
   public void setup() {
+    ISMCoreActionPack ismCoreActionPack = new ISMCoreActionPack();
     infiniteStateMachine = new InfiniteStateMachine();
+    infiniteStateMachine.importActionPack(ismCoreActionPack);
   }
 
   @Test
@@ -33,11 +36,6 @@ public class TestInfiniteStateMachine {
       String tmpProps = TestSupportMethods.createTmpPropertiesFile(tmpFolder);
       InfiniteStateMachine ism = new InfiniteStateMachine(tmpProps);
       assertEquals(ism.getRdbms(), "sqlite3");
-  }
-
-  @Test
-  public void infiniteStateMachineExecutesActions() {
-//    infiniteStateMachine.run();
   }
 
 }

@@ -41,7 +41,7 @@
     <parent>
         <groupId>com.github.museadmin</groupId>
         <artifactId>infinite-state-machine-parent-pom</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.1-SNAPSHOT</version>
     </parent>
 
     <licenses>
@@ -64,8 +64,16 @@
         <dependency>
             <groupId>com.github.museadmin</groupId>
             <artifactId>infinite-state-machine-core-action-pack</artifactId>
-            <!--<version>${ism.core.action.pack.version}</version>-->
-            <version>1.1.2-SNAPSHOT</version>
+            <version>1.1.3-SNAPSHOT</version>
+            <scope>test</scope>
+            <!--NEXUS-->
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.museadmin/infinite-state-machine-common -->
+        <dependency>
+            <groupId>com.github.museadmin</groupId>
+            <artifactId>infinite-state-machine-common</artifactId>
+            <version>1.1.4-SNAPSHOT</version>
+            <!--NEXUS-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
         <dependency>

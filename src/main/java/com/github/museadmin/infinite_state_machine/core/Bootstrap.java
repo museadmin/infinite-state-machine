@@ -1,9 +1,9 @@
 package com.github.museadmin.infinite_state_machine.core;
 
-import com.github.museadmin.infinite_state_machine.action.IAction;
-import com.github.museadmin.infinite_state_machine.action.IActionPack;
-import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
-import com.github.museadmin.infinite_state_machine.data.access.utils.JsonToSqlEtl;
+import com.github.museadmin.infinite_state_machine.common.action.IAction;
+import com.github.museadmin.infinite_state_machine.common.action.IActionPack;
+import com.github.museadmin.infinite_state_machine.common.dal.DataAccessLayer;
+import com.github.museadmin.infinite_state_machine.common.utils.JsonToSqlEtl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,7 +20,8 @@ public class Bootstrap extends RunState {
    * Create a unique database instance for the run
    */
   public void createDatabase() {
-    dataAccessLayer = new DataAccessLayer(propertyCache, runRoot,epochSeconds);
+
+    dataAccessLayer = new DataAccessLayer(propertyCache.getProperty("rdbms").toString(), runRoot,epochSeconds);
   }
 
   /**
@@ -63,7 +64,7 @@ public class Bootstrap extends RunState {
     populateDatabase(ap);
 
     // Import the action classes from the action pack
-    ArrayList tmpActions = ismCoreActionPack.getActionsFromActionPack(
+    ArrayList tmpActions = ap.getActionsFromActionPack(
       dataAccessLayer,
       runRoot
     );

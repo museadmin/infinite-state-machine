@@ -19,8 +19,6 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
     // Control directories and DB
     createRuntimeDirectories();
     createDatabase();
-    // Load the core actions
-    importActionPack(ismCoreActionPack);
   }
 
   /**
@@ -35,8 +33,6 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
     // Control directories and DB
     createRuntimeDirectories();
     createDatabase();
-    // Load the core actions
-    importActionPack(ismCoreActionPack);
   }
 
   /**
@@ -44,7 +40,6 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
    * background thread.
    */
   public void run() {
-
     int i = 0;
     while (! queryRunPhase().equals("STOPPED")) {
       actions.get(i++).execute();

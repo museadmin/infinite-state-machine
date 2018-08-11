@@ -1,8 +1,7 @@
 package com.github.museadmin.infinite_state_machine.core;
 
-import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
-import com.github.museadmin.infinite_state_machine.action.IAction;
-import com.github.museadmin.infinite_state_machine.data.access.dal.DataAccessLayer;
+import com.github.museadmin.infinite_state_machine.common.action.IAction;
+import com.github.museadmin.infinite_state_machine.common.dal.DataAccessLayer;
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
 
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ public class RunState {
 
   public String epochSeconds = Long.toString(System.currentTimeMillis());
   public DataAccessLayer dataAccessLayer = null;
-  public ISMCoreActionPack ismCoreActionPack = new ISMCoreActionPack();
   public PropertyCache propertyCache = new PropertyCache("config.properties");
   public String getRdbms() {
     return rdbms;

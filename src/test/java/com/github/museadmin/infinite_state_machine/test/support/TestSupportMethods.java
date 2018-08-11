@@ -1,6 +1,7 @@
 package com.github.museadmin.infinite_state_machine.test.support;
 
 import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
+import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
 import org.junit.rules.TemporaryFolder;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import java.util.Properties;
 public class TestSupportMethods {
 
   public static InfiniteStateMachine infiniteStateMachine;
+  public static ISMCoreActionPack ismCoreActionPack;
 
   /**
    * Create a one off test properties file
@@ -72,6 +74,13 @@ public class TestSupportMethods {
     return java.time.Instant.now().getEpochSecond();
   }
 
+  /**
+   * Wait for a particular run phase to be entered or return false if not entered within time out
+   * @param phase The phase to wait for
+   * @param time The time out period
+   * @return Boolean. True if entered in time
+   * @throws InterruptedException
+   */
   public static Boolean waitForRunPhase(String phase, Long time) throws InterruptedException {
 
     Long startTime = java.time.Instant.now().getEpochSecond();
