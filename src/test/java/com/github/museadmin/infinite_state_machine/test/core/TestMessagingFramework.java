@@ -15,6 +15,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertTrue;
 
@@ -44,7 +49,7 @@ public class TestMessagingFramework extends TestSupportMethods {
 
     writeMsgFile(
       String.format("junit_%s_localhost", msgId.toString()),
-      getInboundMsgAsJsonObject(
+      createInboundMsgAsJsonObject(
         new JSONObject().put("dummy", "value"),
         "ActionNormalShutdown"
       ).toString()
@@ -54,23 +59,46 @@ public class TestMessagingFramework extends TestSupportMethods {
   }
 
   @Test
-  public void testCorruptInboundMessageIsRejected() throws IOException, InterruptedException {
+  public void testInboundMessageWithMissingRequiredFieledIsRejected() throws IOException, InterruptedException {
+
+    String malformedFile;
+
     thread = new Thread (infiniteStateMachine, threadName);
     thread.start ();
 
     assertTrue(waitForRunPhase("RUNNING", 2L));
-    String malformedFile = String.format("junit_%s_localhost", msgId.toString());
-    writeMsgFile(
-      malformedFile,
-      getInboundMsgAsJsonObject(
+
+    for (String field : Arrays.asList(
+      "action",
+      "sender",
+      "sender_id",
+      "recipient",
+      "sent"
+    )) {
+
+      // Empty action string
+      malformedFile = String.format("junit_%s_localhost", msgId.toString());
+      JSONObject msgObject = createInboundMsgAsJsonObjectWithEmptyField(
         new JSONObject().put("dummy", "value"),
-        ""
-      ).toString()
-    );
+        "ActionAbnormalShutdown",
+        field
+      );
+      writeMsgFile(malformedFile, msgObject.toString());
+      
+      // No action item in json
+      malformedFile = String.format("junit_%s_localhost", msgId.toString());
+      msgObject = createInboundMsgAsJsonObjectWithNullField(
+        new JSONObject().put("dummy", "value"),
+        "ActionAbnormalShutdown",
+        field
+      );
+      writeMsgFile(malformedFile, msgObject.toString());
+
+    }
 
     writeMsgFile(
       String.format("junit_%s_localhost", msgId.toString()),
-      getInboundMsgAsJsonObject(
+      createInboundMsgAsJsonObject(
         new JSONObject().put("dummy", "value"),
         "ActionNormalShutdown"
       ).toString()
@@ -78,9 +106,53 @@ public class TestMessagingFramework extends TestSupportMethods {
 
     assertTrue(waitForRunPhase("STOPPED", 2L));
 
-    String msgRejected = infiniteStateMachine.queryProperty("msg_rejected");
-    File rejected = new File(String.format("%s%s%s.msg", msgRejected, File.separator, malformedFile));
-    assertTrue(rejected.exists());
+    try (Stream<Path> files = Files.list(Paths.get(infiniteStateMachine.queryProperty("msg_rejected")))) {
+      assertTrue(files.count() == 20L);
+    }
+  }
+
+  /**
+   * Create a message in JSON format and empty one of the fields then return as a JSONObject
+   * @param payload A JSONObject that represents an optional payload
+   * @param action The name of the target action
+   * @return JSONObject representing the message
+   */
+  private JSONObject createInboundMsgAsJsonObjectWithEmptyField(JSONObject payload, String action, String field) {
+
+    JSONObject msg = new JSONObject()
+      .put("sender", "junit")
+      .put("sender_id", (msgId++).toString())
+      .put("recipient", "localhost")
+      .put("action", action)
+      .put("payload", payload)
+      .put("sent", epochSecondsString())
+      .put("received", "")
+      .put("direction", "in")
+      .put("processed", "0");
+    msg.put(field, "");
+    return msg;
+  }
+
+  /**
+   * Create a message in JSON format and null one of the fields then return as a JSONObject
+   * @param payload A JSONObject that represents an optional payload
+   * @param action The name of the target action
+   * @return JSONObject representing the message
+   */
+  private JSONObject createInboundMsgAsJsonObjectWithNullField(JSONObject payload, String action, String field) {
+
+    JSONObject msg = new JSONObject()
+      .put("sender", "junit")
+      .put("sender_id", (msgId++).toString())
+      .put("recipient", "localhost")
+      .put("action", action)
+      .put("payload", payload)
+      .put("sent", epochSecondsString())
+      .put("received", "")
+      .put("direction", "in")
+      .put("processed", "0");
+    msg.remove(field);
+    return msg;
   }
 
   /**
@@ -89,7 +161,7 @@ public class TestMessagingFramework extends TestSupportMethods {
    * @param action The name of the target action
    * @return JSONObject representing the message
    */
-  private JSONObject getInboundMsgAsJsonObject(JSONObject payload, String action) {
+  private JSONObject createInboundMsgAsJsonObject(JSONObject payload, String action) {
 
     return new JSONObject()
       .put("sender", "junit")
