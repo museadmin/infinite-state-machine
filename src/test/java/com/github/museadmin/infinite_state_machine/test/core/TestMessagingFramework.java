@@ -22,6 +22,7 @@ public class TestMessagingFramework extends TestSupportMethods {
 
   private Thread thread;
   private String threadName = "UnitTestThread";
+  private Integer msgId = 1;
 
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
@@ -41,33 +42,66 @@ public class TestMessagingFramework extends TestSupportMethods {
 
     assertTrue(waitForRunPhase("RUNNING", 2L));
 
-    JSONObject payload = new JSONObject()
-      .put("dummy", "value");
-
-    String message = new JSONObject()
-      .put("sender", "junit")
-      .put("sender_id", "1")
-      .put("recipient", "localhost")
-      .put("action", "ActionNormalShutdown")
-      .put("payload", payload)
-      .put("sent", epochSecondsString())
-      .put("received", "")
-      .put("direction", "in")
-      .put("processed", "0").toString();
-
-    writeMsgFile(message, "junit_1_localhost");
+    writeMsgFile(
+      String.format("junit_%s_localhost", msgId.toString()),
+      getInboundMsgAsJsonObject(
+        new JSONObject().put("dummy", "value"),
+        "ActionNormalShutdown"
+      ).toString()
+    );
 
     assertTrue(waitForRunPhase("STOPPED", 2L));
   }
 
-  /*
-  TODO needs a message factory that inserts incrementing id
-  returns message and file name
+  @Test
+  public void testCorruptInboundMessageIsRejected() throws IOException, InterruptedException {
+    thread = new Thread (infiniteStateMachine, threadName);
+    thread.start ();
+
+    assertTrue(waitForRunPhase("RUNNING", 2L));
+    String malformedFile = String.format("junit_%s_localhost", msgId.toString());
+    writeMsgFile(
+      malformedFile,
+      getInboundMsgAsJsonObject(
+        new JSONObject().put("dummy", "value"),
+        ""
+      ).toString()
+    );
+
+    writeMsgFile(
+      String.format("junit_%s_localhost", msgId.toString()),
+      getInboundMsgAsJsonObject(
+        new JSONObject().put("dummy", "value"),
+        "ActionNormalShutdown"
+      ).toString()
+    );
+
+    assertTrue(waitForRunPhase("STOPPED", 2L));
+
+    String msgRejected = infiniteStateMachine.queryProperty("msg_rejected");
+    File rejected = new File(String.format("%s%s%s.msg", msgRejected, File.separator, malformedFile));
+    assertTrue(rejected.exists());
+  }
+
+  /**
+   * Create a message in JSON format and return as a JSONObject
+   * @param payload A JSONObject that represents an optional payload
+   * @param action The name of the target action
+   * @return JSONObject representing the message
    */
-//  @Test
-//  public void testCorruptInboundMessageIsRejected() {
-//
-//  }
+  private JSONObject getInboundMsgAsJsonObject(JSONObject payload, String action) {
+
+    return new JSONObject()
+      .put("sender", "junit")
+      .put("sender_id", (msgId++).toString())
+      .put("recipient", "localhost")
+      .put("action", action)
+      .put("payload", payload)
+      .put("sent", epochSecondsString())
+      .put("received", "")
+      .put("direction", "in")
+      .put("processed", "0");
+  }
 
   /**
    * Write a message to file
@@ -75,7 +109,7 @@ public class TestMessagingFramework extends TestSupportMethods {
    * @param fileName Name of the test file
    * @throws IOException
    */
-  private void writeMsgFile(String message, String fileName) throws IOException {
+  private void writeMsgFile(String fileName, String message) throws IOException {
 
     String inbound = infiniteStateMachine.queryProperty("msg_in");
 
