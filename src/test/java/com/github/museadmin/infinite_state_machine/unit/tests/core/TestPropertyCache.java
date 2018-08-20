@@ -1,7 +1,7 @@
-package com.github.museadmin.infinite_state_machine.test.core;
+package com.github.museadmin.infinite_state_machine.unit.tests.core;
 
 import com.github.museadmin.infinite_state_machine.lib.PropertyCache;
-import com.github.museadmin.infinite_state_machine.test.support.TestSupportMethods;
+import com.github.museadmin.infinite_state_machine.unit.tests.support.TestSupportMethods;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +23,7 @@ public class TestPropertyCache {
   }
 
   @Test
-  public void testCacheGetsValueForKey() {
+  public void testCacheGetsValueForKnownKey() {
     assertTrue(propertyCache.getProperty("rdbms").equalsIgnoreCase("sqlite3") ||
         propertyCache.getProperty("rdbms").equalsIgnoreCase("postgres"));
   }

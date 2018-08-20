@@ -1,4 +1,4 @@
-package com.github.museadmin.infinite_state_machine.common;
+package com.github.museadmin.infinite_state_machine.unit.tests.common;
 
 
 import com.github.museadmin.infinite_state_machine.common.utils.JsonToSqlEtl;

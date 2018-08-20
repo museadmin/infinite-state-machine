@@ -1,4 +1,4 @@
-package com.github.museadmin.infinite_state_machine.test.support;
+package com.github.museadmin.infinite_state_machine.unit.tests.support;
 
 import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
 import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;

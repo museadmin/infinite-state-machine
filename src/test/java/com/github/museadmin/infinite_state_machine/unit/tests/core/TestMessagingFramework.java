@@ -1,8 +1,8 @@
-package com.github.museadmin.infinite_state_machine.test.core;
+package com.github.museadmin.infinite_state_machine.unit.tests.core;
 
 import com.github.museadmin.infinite_state_machine.core.InfiniteStateMachine;
 import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
-import com.github.museadmin.infinite_state_machine.test.support.TestSupportMethods;
+import com.github.museadmin.infinite_state_machine.unit.tests.support.TestSupportMethods;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,7 +59,7 @@ public class TestMessagingFramework extends TestSupportMethods {
   }
 
   @Test
-  public void testInboundMessageWithMissingRequiredFieledIsRejected() throws IOException, InterruptedException {
+  public void testInboundMessageWithMissingRequiredFieldIsRejected() throws IOException, InterruptedException {
 
     String malformedFile;
 

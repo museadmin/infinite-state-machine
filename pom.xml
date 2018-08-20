@@ -60,6 +60,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.museadmin</groupId>
+            <artifactId>infinite-state-machine-test</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.museadmin/infinite-state-machine-core-action-pack -->
         <dependency>
             <groupId>com.github.museadmin</groupId>

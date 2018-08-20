@@ -1,4 +1,4 @@
-package com.github.museadmin.infinite_state_machine.test.log;
+package com.github.museadmin.infinite_state_machine.unit.tests.log;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

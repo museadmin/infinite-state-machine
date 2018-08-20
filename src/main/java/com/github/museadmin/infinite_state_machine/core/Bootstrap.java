@@ -92,9 +92,17 @@ public class Bootstrap extends RunState {
    */
   private void populateDatabase(IActionPack ap) {
     // First create the runtime tables
-    createTables(ap.getJsonObjectFromResourceFile("tables.json"));
+    createTables(
+      ap.getJsonObjectFromResourceFile(
+        ap.getClass().getSimpleName() + "_tables.json"
+      )
+    );
     // Parse the table data from the json definitions
-    statements = JsonToSqlEtl.parseSqlFromJson(ap.getJsonObjectFromResourceFile("pack_data.json"));
+    statements = JsonToSqlEtl.parseSqlFromJson(
+      ap.getJsonObjectFromResourceFile(
+      ap.getClass().getSimpleName() + "_pack_data.json"
+      )
+    );
     // Use the statements from the ActionPack to populate the tables
     statements.forEach(statement -> dataAccessLayer.executeSqlStatement(statement));
   }
