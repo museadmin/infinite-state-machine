@@ -12,19 +12,6 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
   private static final Logger LOGGER = LoggerFactory.getLogger(InfiniteStateMachine.class.getName());
 
   /**
-   * Default constructor
-   */
-  public InfiniteStateMachine() {
-    String configFile = System.getProperty("configFile");
-    configFile = System.getenv("configFile");
-
-    rdbms = propertyCache.getProperty("rdbms");
-    // Control directories and DB
-    createRuntimeDirectories();
-    createDatabase();
-  }
-
-  /**
    * Constructor accepts a fully qualified path to an alternative
    * properties file. This enables applications to pass in their own
    * properties.
