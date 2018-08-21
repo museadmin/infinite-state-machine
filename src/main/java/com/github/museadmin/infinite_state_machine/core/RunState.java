@@ -12,7 +12,7 @@ public class RunState {
 
   public String epochSeconds = Long.toString(System.currentTimeMillis());
   public DataAccessLayer dataAccessLayer = null;
-  public PropertyCache propertyCache = new PropertyCache("config.properties");
+  public PropertyCache propertyCache = new PropertyCache("infinite_state_machine.properties");
   public String getRdbms() {
     return rdbms;
   }

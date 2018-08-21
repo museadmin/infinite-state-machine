@@ -15,6 +15,9 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
    * Default constructor
    */
   public InfiniteStateMachine() {
+    String configFile = System.getProperty("configFile");
+    configFile = System.getenv("configFile");
+
     rdbms = propertyCache.getProperty("rdbms");
     // Control directories and DB
     createRuntimeDirectories();
