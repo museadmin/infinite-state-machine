@@ -19,7 +19,6 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
    */
   public InfiniteStateMachine(String propertiesFile) {
     propertyCache.importProperties(propertiesFile);
-    rdbms = propertyCache.getProperty("rdbms");
     // Control directories and DB
     createRuntimeDirectories();
     createDatabase();

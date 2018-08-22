@@ -21,7 +21,7 @@ public class Bootstrap extends RunState {
    */
   public void createDatabase() {
 
-    dataAccessLayer = new DataAccessLayer(propertyCache.getProperty("rdbms").toString(), runRoot,epochSeconds);
+    dataAccessLayer = new DataAccessLayer(propertyCache);
   }
 
   /**
@@ -30,10 +30,12 @@ public class Bootstrap extends RunState {
   public void createRuntimeDirectories() {
 
     // Create the root directory for this run
-    runRoot = propertyCache.getProperty("runRoot") + File.separator +
+    String runRoot = propertyCache.getProperty("runRoot") + File.separator +
         epochSeconds;
     File root = new File(runRoot);
     if (! root.isDirectory()) { root.mkdirs(); }
+
+    propertyCache.setProperty("runRoot", runRoot);
   }
 
   /**
@@ -48,6 +50,10 @@ public class Bootstrap extends RunState {
               dataAccessLayer.createTable(tables.getJSONObject(i));
           }
       }
+  }
+
+  public String getRdbms() {
+    return propertyCache.getProperty("rdbms");
   }
 
   /**
@@ -66,7 +72,7 @@ public class Bootstrap extends RunState {
     // Import the action classes from the action pack
     ArrayList tmpActions = ap.getActionsFromActionPack(
       dataAccessLayer,
-      runRoot
+      propertyCache.getProperty("runRoot")
     );
 
     if (tmpActions != null && tmpActions.size() > 0){
