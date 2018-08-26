@@ -3,7 +3,6 @@ package com.github.museadmin.infinite_state_machine.core;
 import com.github.museadmin.infinite_state_machine.common.action.IAction;
 import com.github.museadmin.infinite_state_machine.common.action.IActionPack;
 import com.github.museadmin.infinite_state_machine.common.dal.DataAccessLayer;
-import com.github.museadmin.infinite_state_machine.common.utils.JsonToSqlEtl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,7 +19,6 @@ public class Bootstrap extends RunState {
    * Create a unique database instance for the run
    */
   public void createDatabase() {
-
     dataAccessLayer = new DataAccessLayer(propertyCache);
   }
 
@@ -30,8 +28,12 @@ public class Bootstrap extends RunState {
   public void createRuntimeDirectories() {
 
     // Create the root directory for this run
-    String runRoot = propertyCache.getProperty("runRoot") + File.separator +
-        epochSeconds;
+    String runRoot = String.format(
+      "%s%s%s",
+      propertyCache.getProperty("runRoot"),
+      File.separator,
+      epochSeconds
+    );
     File root = new File(runRoot);
     if (! root.isDirectory()) { root.mkdirs(); }
 
@@ -72,7 +74,7 @@ public class Bootstrap extends RunState {
     // Import the action classes from the action pack
     ArrayList tmpActions = ap.getActionsFromActionPack(
       dataAccessLayer,
-      propertyCache.getProperty("runRoot")
+      propertyCache
     );
 
     if (tmpActions != null && tmpActions.size() > 0){
@@ -97,20 +99,24 @@ public class Bootstrap extends RunState {
    * @param ap The action pack
    */
   private void populateDatabase(IActionPack ap) {
-    // First create the runtime tables
-    createTables(
-      ap.getJsonObjectFromResourceFile(
-        ap.getClass().getSimpleName() + "_tables.json"
-      )
+
+    // Find the sql file for this rdbms
+    String resource = String.format(
+      "%s_%s.sql",
+      ap.getClass().getSimpleName(),
+      propertyCache.getProperty("rdbms"));
+    String target = String.format("/tmp/%s", resource);
+
+    // Copy it to tmp
+    ap.copyResourceFile(
+      resource,
+      target
     );
-    // Parse the table data from the json definitions
-    statements = JsonToSqlEtl.parseSqlFromJson(
-      ap.getJsonObjectFromResourceFile(
-      ap.getClass().getSimpleName() + "_pack_data.json"
-      )
-    );
-    // Use the statements from the ActionPack to populate the tables
-    statements.forEach(statement -> dataAccessLayer.executeSqlStatement(statement));
+
+    // Call dataAccessLayer to import the file into the db
+    // each dao then has own method for running the import
+    //sqlite3 uses system call to command line while mysql uses import cmd
+    dataAccessLayer.loadSqlFile(target, true);
   }
 
   /**
