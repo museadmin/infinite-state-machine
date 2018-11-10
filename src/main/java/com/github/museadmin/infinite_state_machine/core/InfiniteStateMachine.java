@@ -29,6 +29,7 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
    * background thread.
    */
   public void run() {
+    LOGGER.info("Starting run");
     int i = 0;
     while (! queryRunPhase().equals("STOPPED")) {
       actions.get(i++).execute();
@@ -36,6 +37,7 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
         i = 0;
       }
     }
+    LOGGER.info("Run completed");
   }
 
   /**
