@@ -1,4 +1,4 @@
-package com.github.museadmin.infinite_state_machine.core;
+package com.github.museadmin.infinite_state_machine.ism;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,7 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
    * Run the state machine main control loop in a
    * background thread.
    */
+  @Override
   public void run() {
     LOGGER.info("Starting run");
     int i = 0;

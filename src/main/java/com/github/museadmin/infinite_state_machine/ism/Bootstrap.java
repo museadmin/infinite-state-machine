@@ -1,4 +1,4 @@
-package com.github.museadmin.infinite_state_machine.core;
+package com.github.museadmin.infinite_state_machine.ism;
 
 import com.github.museadmin.infinite_state_machine.common.action.IAction;
 import com.github.museadmin.infinite_state_machine.common.action.IActionPack;
