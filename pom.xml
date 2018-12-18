@@ -8,7 +8,7 @@
     <artifactId>infinite-state-machine</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>A state machine that doesn't have a finite number of states</description>
-    <version>1.1.7</version>
+    <version>1.1.8</version>
     <packaging>jar</packaging>
 
     <developers>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>com.github.museadmin</groupId>
             <artifactId>infinite-state-machine-core-action-pack</artifactId>
-            <version>1.1.7</version>
+            <version>1.1.8</version>
             <scope>test</scope>
             <!--NEXUS-->
         </dependency>
