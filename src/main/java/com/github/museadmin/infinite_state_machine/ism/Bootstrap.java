@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -19,22 +20,26 @@ public class Bootstrap extends RunState {
   /**
    * Create a unique database instance for the run if applicable
    */
-  public void createDatabase() {
+  void createDatabase() {
     dataAccessLayer = new DataAccessLayer(propertyCache);
   }
 
   /**
    * Each run needs its own distinct run directory structure created
    */
-  public void createRuntimeDirectories() {
+  void createRuntimeDirectories() {
 
     // Create the root directory for this run
-    String runRoot = propertyCache.getProperty("runRoot") + File.separator +
-        epochSeconds;
+    String runRoot = Paths.get(
+        propertyCache.getProperty("runRoot"),
+        epochSeconds
+    ).toString();
     File root = new File(runRoot);
-    if (! root.isDirectory()) { root.mkdirs(); }
-
-    propertyCache.setProperty("runRoot", runRoot);
+    if (! root.isDirectory()) {
+      if (root.mkdirs()) {
+        propertyCache.setProperty("runRoot", runRoot);
+      }
+    }
   }
 
   /**
@@ -42,7 +47,7 @@ public class Bootstrap extends RunState {
    * Table definitions are read in from the json files and passed to the DAO
    * @param jsonObject Object holds table metadata
    */
-  public void createTables(JSONObject jsonObject) {
+  private void createTables(JSONObject jsonObject) {
       JSONArray tables = jsonObject.getJSONArray("tables");
       if (tables != null) {
           for (int i = 0; i < tables.length(); i++) {

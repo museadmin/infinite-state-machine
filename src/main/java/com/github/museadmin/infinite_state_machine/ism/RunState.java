@@ -6,13 +6,13 @@ import com.github.museadmin.infinite_state_machine.common.lib.PropertyCache;
 
 import java.util.ArrayList;
 
-public class RunState {
+class RunState {
 
-  public ArrayList<IAction> actions = new ArrayList<>();
+  public final ArrayList<IAction> actions = new ArrayList<>();
 
-  public String epochSeconds = Long.toString(System.currentTimeMillis());
+  public final String epochSeconds = Long.toString(System.currentTimeMillis());
   public DataAccessLayer dataAccessLayer = null;
-  public PropertyCache propertyCache = new PropertyCache();
+  public final PropertyCache propertyCache = new PropertyCache();
 
   // The array of actions
   public ArrayList<String> statements = new ArrayList<>();
