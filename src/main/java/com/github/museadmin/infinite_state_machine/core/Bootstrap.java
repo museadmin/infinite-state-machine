@@ -17,10 +17,9 @@ import java.util.ArrayList;
 public class Bootstrap extends RunState {
 
   /**
-   * Create a unique database instance for the run
+   * Create a unique database instance for the run if applicable
    */
   public void createDatabase() {
-
     dataAccessLayer = new DataAccessLayer(propertyCache);
   }
 
