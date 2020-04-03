@@ -37,7 +37,7 @@
         </repository>
     </distributionManagement>
 
-    <!--The identifier of the parent POM-->
+    <!--The parent POM-->
     <parent>
         <groupId>com.github.museadmin</groupId>
         <artifactId>infinite-state-machine-parent-pom</artifactId>
