@@ -8,7 +8,7 @@
     <artifactId>infinite-state-machine</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>A state machine that doesn't have a finite number of states</description>
-    <version>1.1.8</version>
+    <version>1.1.9</version>
     <packaging>jar</packaging>
 
     <developers>
@@ -37,7 +37,7 @@
         </repository>
     </distributionManagement>
 
-    <!--The identifier of the parent POM-->
+    <!--The parent POM-->
     <parent>
         <groupId>com.github.museadmin</groupId>
         <artifactId>infinite-state-machine-parent-pom</artifactId>
@@ -63,17 +63,15 @@
         <!-- https://mvnrepository.com/artifact/com.github.museadmin/infinite-state-machine-common -->
         <dependency>
             <groupId>com.github.museadmin</groupId>
-            <artifactId>infinite-state-machine-common</artifactId>
+            <artifactId>infinite-state-machine-core-action-pack</artifactId>
             <version>1.1.8</version>
-            <!--NEXUS-->
+            <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.museadmin/infinite-state-machine-core-action-pack -->
         <dependency>
             <groupId>com.github.museadmin</groupId>
-            <artifactId>infinite-state-machine-core-action-pack</artifactId>
-            <version>1.1.8</version>
-            <scope>test</scope>
-            <!--NEXUS-->
+            <artifactId>infinite-state-machine-common</artifactId>
+            <version>1.1.9</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
         <dependency>
