@@ -24,7 +24,11 @@ public class TestPropertyCache extends TestSupportMethods {
     propertyCache = new PropertyCache();
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
     URL is = loader.getResource(PROPERTIES);
-    propertyCache.importProperties(is.getPath());
+    try {
+      propertyCache.importProperties(is.getPath());
+    } catch (NullPointerException e) {
+      System.out.printf("ERROR: Did not find properties file (%s)%n", PROPERTIES);
+    }
   }
 
   @Test

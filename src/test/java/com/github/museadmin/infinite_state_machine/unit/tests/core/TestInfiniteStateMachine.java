@@ -4,12 +4,11 @@ import com.github.museadmin.infinite_state_machine.ism.InfiniteStateMachine;
 import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
 import com.github.museadmin.infinite_state_machine.ism.ISMTestActionPack;
 import com.github.museadmin.infinite_state_machine.unit.tests.support.TestSupportMethods;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import java.net.URL;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -19,14 +18,12 @@ public class TestInfiniteStateMachine extends TestSupportMethods {
   protected InfiniteStateMachine infiniteStateMachine;
 
   @Rule
-  public TemporaryFolder tmpFolder = new TemporaryFolder();
+  public final TemporaryFolder tmpFolder = new TemporaryFolder();
 
   @Before
   public void setup() {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    URL is = loader.getResource(PROPERTIES);
     ISMCoreActionPack ismCoreActionPack = new ISMCoreActionPack();
-    infiniteStateMachine = new InfiniteStateMachine(is.getPath());
+    infiniteStateMachine = new InfiniteStateMachine(PROPERTIES);
     infiniteStateMachine.importActionPack(ismCoreActionPack);
   }
 
@@ -39,13 +36,32 @@ public class TestInfiniteStateMachine extends TestSupportMethods {
   }
 
   @Test
-  public void testInfiniteStateMachineImportsProperties() {
-    String tmpProps = TestSupportMethods.createTmpPropertiesFile(tmpFolder);
+  public void testInfiniteStateMachineImportsQualifiedProperties() {
+    // Helper method expects properties as JSONObject
+    JSONObject properties = new JSONObject();
+    properties.put("rdbms", "sqlite3");
+    properties.put("dbName", "ism.db");
+    properties.put("dbPath", "/control/database");
+    properties.put("runRoot", tmpFolder.getRoot().getAbsolutePath());
+    String tmpProps = TestSupportMethods.createTmpPropertiesFile(properties);
+
     InfiniteStateMachine ism = new InfiniteStateMachine(tmpProps);
     assertEquals(ism.getRdbms(), "sqlite3");
   }
 
   @Test
+  public void testInfiniteStateMachineImportsUnqualifiedProperties() {
+    InfiniteStateMachine ism = new InfiniteStateMachine("db_test.properties");
+    assertEquals(ism.getRdbms(), "sqlite3");
+  }
+
+  @Test
+  public void testInfiniteStateMachineImportsDefaultProperties1() {
+    InfiniteStateMachine ism = new InfiniteStateMachine("");
+    assertEquals(ism.getRdbms(), "sqlite3");
+  }
+
+    @Test
   public void testIsmImportsTestActionPack() {
     ISMTestActionPack ismTestActionPack = new ISMTestActionPack();
     infiniteStateMachine.importActionPack(ismTestActionPack);

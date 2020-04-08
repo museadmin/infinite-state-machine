@@ -3,9 +3,9 @@ package com.github.museadmin.infinite_state_machine.unit.tests.support;
 import com.github.museadmin.infinite_state_machine.ism.InfiniteStateMachine;
 import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
 import org.json.JSONObject;
-import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -22,21 +22,24 @@ public class TestSupportMethods {
 
   /**
    * Create a one off test properties file
-   * @param tmpFolder The tmp folder for the test
+   * @param props Properties as JSONObject
    * @return String Path to tmp property file
    */
-  public static String createTmpPropertiesFile(TemporaryFolder tmpFolder) {
+  public static String createTmpPropertiesFile(JSONObject props) {
 
     FileOutputStream output = null;
     String tmpProps = null;
     try {
-      tmpProps = tmpFolder.newFile("test.properties").getAbsolutePath();
-      String tmpDir = tmpFolder.getRoot().getAbsolutePath();
+      tmpProps = props.getString("runRoot") +
+          File.separator +
+            "test.properties";
 
       output = new FileOutputStream(tmpProps);
       Properties prop = new Properties();
-      prop.setProperty("rdbms", "sqlite3");
-      prop.setProperty("runRoot", tmpDir);
+      prop.setProperty("rdbms", props.getString("rdbms"));
+      prop.setProperty("runRoot", props.getString("runRoot"));
+      prop.setProperty("dbPath", props.getString("dbPath"));
+      prop.setProperty("dbName", props.getString("dbName"));
       prop.store(output,null);
 
     } catch (FileNotFoundException e) {
@@ -58,10 +61,6 @@ public class TestSupportMethods {
   /**
    * Get the epoch milliseconds as a string
    * @return The seconds in string form
-   */
-  public static String epochMilliSeconds() {
-    return Long.toString(System.currentTimeMillis());
-  }
 
   /**
    * Get the epoch seconds as a string
@@ -69,14 +68,6 @@ public class TestSupportMethods {
    */
   public static String epochSecondsString() {
     return Long.toString(java.time.Instant.now().getEpochSecond());
-  }
-
-  /**
-   * Get the epoch seconds as a Long
-   * @return The seconds in Long form
-   */
-  public static Long epochSecondsLong() {
-    return java.time.Instant.now().getEpochSecond();
   }
 
   /**
@@ -89,7 +80,7 @@ public class TestSupportMethods {
   public static Boolean waitForRunPhase(String phase, Long time) throws InterruptedException {
 
     Long startTime = java.time.Instant.now().getEpochSecond();
-    Long timeOut = startTime + time;
+    long timeOut = startTime + time;
 
     while(! infiniteStateMachine.queryRunPhase().equals(phase)) {
       Thread.sleep(100);
@@ -182,12 +173,12 @@ public class TestSupportMethods {
     String semaphore = inbound + File.separator + fileName + ".smp";
 
     try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-      new FileOutputStream(msg_file), "utf-8"))) {
+      new FileOutputStream(msg_file), StandardCharsets.UTF_8))) {
       writer.write(message);
     }
 
     try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-      new FileOutputStream(semaphore), "utf-8"))) {
+      new FileOutputStream(semaphore), StandardCharsets.UTF_8))) {
       writer.write("");
     }
   }

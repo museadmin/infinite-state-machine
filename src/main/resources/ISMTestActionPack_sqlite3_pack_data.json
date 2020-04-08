@@ -1,5 +1,5 @@
 {
   "artifact_id" : "infinite-state-machine-test",
   "action_pack" : "ISMTestActionPack",
-  "items" : []
+  "inserts" : []
 }

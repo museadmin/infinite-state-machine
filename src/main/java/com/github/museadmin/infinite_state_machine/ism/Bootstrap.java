@@ -3,7 +3,6 @@ package com.github.museadmin.infinite_state_machine.ism;
 import com.github.museadmin.infinite_state_machine.common.action.IAction;
 import com.github.museadmin.infinite_state_machine.common.action.IActionPack;
 import com.github.museadmin.infinite_state_machine.common.dal.DataAccessLayer;
-import com.github.museadmin.infinite_state_machine.common.utils.JsonToSqlEtl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,7 +13,7 @@ import java.util.ArrayList;
  * Bootstrapper contains the methods to get the state machine
  * running with all of its default core actions and dependencies
  */
-public class Bootstrap extends RunState {
+public class Bootstrap extends ISMTestHelpers {
 
   /**
    * Create a unique database instance for the run if applicable
@@ -46,13 +45,9 @@ public class Bootstrap extends RunState {
       JSONArray tables = jsonObject.getJSONArray("tables");
       if (tables != null) {
           for (int i = 0; i < tables.length(); i++) {
-              dataAccessLayer.createTable(tables.getJSONObject(i));
+            dataAccessLayer.createTable(tables.getString(i));
           }
       }
-  }
-
-  public String getRdbms() {
-    return propertyCache.getProperty("rdbms");
   }
 
   /**
@@ -96,20 +91,27 @@ public class Bootstrap extends RunState {
    * @param ap The action pack
    */
   private void populateDatabase(IActionPack ap) {
+    String rdbms = propertyCache.getProperty("rdbms").toLowerCase();
     // First create the runtime tables
     createTables(
       ap.getJsonObjectFromResourceFile(
-        ap.getClass().getSimpleName() + "_tables.json"
+        ap.getClass().getSimpleName() +
+            "_" + rdbms +
+              "_tables.json"
       )
     );
     // Parse the table data from the json definitions
-    statements = JsonToSqlEtl.parseSqlFromJson(
-      ap.getJsonObjectFromResourceFile(
-      ap.getClass().getSimpleName() + "_pack_data.json"
-      )
+    JSONObject sqlObj = ap.getJsonObjectFromResourceFile(
+      ap.getClass().getSimpleName() +
+          "_" + rdbms +
+            "_pack_data.json"
     );
+
     // Use the statements from the ActionPack to populate the tables
-    statements.forEach(statement -> dataAccessLayer.executeSqlStatement(statement));
+    JSONArray statements = sqlObj.getJSONArray("inserts");
+    statements.forEach(
+        statement -> dataAccessLayer.executeSqlStatement(statement.toString())
+    );
   }
 
   /**

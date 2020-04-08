@@ -10,29 +10,27 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TestMessagingFramework extends TestSupportMethods {
 
   private Thread thread;
-  private String threadName = "UnitTestThread";
+  private final String threadName = "UnitTestThread";
 
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   @Before
   public void setup() {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    URL is = loader.getResource(PROPERTIES);
     ismCoreActionPack = new ISMCoreActionPack();
-    infiniteStateMachine = new InfiniteStateMachine(is.getPath());
+    infiniteStateMachine = new InfiniteStateMachine(PROPERTIES);
     infiniteStateMachine.importActionPack(ismCoreActionPack);
   }
 
@@ -104,7 +102,7 @@ public class TestMessagingFramework extends TestSupportMethods {
     assertTrue(waitForRunPhase("STOPPED", 2L));
 
     try (Stream<Path> files = Files.list(Paths.get(infiniteStateMachine.queryProperty("msg_rejected")))) {
-      assertTrue(files.count() == 20L);
+      assertEquals(20L, files.count());
     }
   }
 

@@ -8,14 +8,12 @@ import java.util.ArrayList;
 
 public class RunState {
 
-  public ArrayList<IAction> actions = new ArrayList<>();
-
-  public String epochSeconds = Long.toString(System.currentTimeMillis());
+  public final ArrayList<IAction> actions = new ArrayList<>();
+  public final String epochSeconds = Long.toString(System.currentTimeMillis());
   public DataAccessLayer dataAccessLayer = null;
-  public PropertyCache propertyCache = new PropertyCache();
+  public final PropertyCache propertyCache = new PropertyCache();
 
-  // The array of actions
-  public ArrayList<String> statements = new ArrayList<>();
-
-  public Boolean running = true;
+  public RunState() {
+    propertyCache.setProperty("epoch", epochSeconds);
+  }
 }
