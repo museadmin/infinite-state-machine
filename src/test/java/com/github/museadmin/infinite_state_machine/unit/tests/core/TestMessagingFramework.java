@@ -40,7 +40,7 @@ public class TestMessagingFramework extends TestSupportMethods {
     thread = new Thread (infiniteStateMachine, threadName);
     thread.start ();
 
-    assertTrue(waitForRunPhase("RUNNING", 2L));
+    assertTrue(waitForRunPhase("RUNNING", 4L));
 
     writeMsgFile(
       String.format("junit_%s_localhost", msgId.toString()),
@@ -50,7 +50,7 @@ public class TestMessagingFramework extends TestSupportMethods {
       ).toString()
     );
 
-    assertTrue(waitForRunPhase("STOPPED", 2L));
+    assertTrue(waitForRunPhase("STOPPED", 4L));
   }
 
   @Test
@@ -61,7 +61,7 @@ public class TestMessagingFramework extends TestSupportMethods {
     thread = new Thread (infiniteStateMachine, threadName);
     thread.start ();
 
-    assertTrue(waitForRunPhase("RUNNING", 2L));
+    assertTrue(waitForRunPhase("RUNNING", 4L));
 
     for (String field : Arrays.asList(
       "action",
@@ -99,7 +99,7 @@ public class TestMessagingFramework extends TestSupportMethods {
       ).toString()
     );
 
-    assertTrue(waitForRunPhase("STOPPED", 2L));
+    assertTrue(waitForRunPhase("STOPPED", 4L));
 
     try (Stream<Path> files = Files.list(Paths.get(infiniteStateMachine.queryProperty("msg_rejected")))) {
       assertEquals(20L, files.count());

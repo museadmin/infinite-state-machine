@@ -67,6 +67,7 @@ public class InfiniteStateMachine extends Bootstrap implements Runnable {
       }
     }
     LOGGER.info("Run completed");
+    // TODO Add teardown of DB if property is set for test runs
   }
 
   /**
