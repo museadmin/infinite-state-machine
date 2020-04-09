@@ -5,6 +5,8 @@ import com.github.museadmin.infinite_state_machine.ism.InfiniteStateMachine;
 import com.github.museadmin.infinite_state_machine.unit.tests.support.TestSupportMethods;
 import org.json.JSONObject;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,7 +26,7 @@ public class TestDAL extends TestSupportMethods {
   @Before
   public void setup() {
     ISMCoreActionPack ismCoreActionPack = new ISMCoreActionPack();
-    infiniteStateMachine = new InfiniteStateMachine("db_test.properties");
+    infiniteStateMachine = new InfiniteStateMachine("infinite_state_machine.properties");
     infiniteStateMachine.importActionPack(ismCoreActionPack);
   }
 
@@ -33,9 +35,21 @@ public class TestDAL extends TestSupportMethods {
     boolean tableFound = false;
     ArrayList <JSONObject> results = infiniteStateMachine.getDbTables();
     for (JSONObject result : results) {
-      if (result.getString("name").equalsIgnoreCase("messages")) {
-        tableFound = true;
+      switch (infiniteStateMachine.getRdbms().toUpperCase()) {
+        case "SQLITE3":
+          if (result.getString("name").equalsIgnoreCase("messages")) {
+            tableFound = true;
+          }
+          break;
+        case "MYSQL":
+          if (result.getString("TABLE_NAME").equalsIgnoreCase("messages")) {
+            tableFound = true;
+          }
+          break;
+        default:
+          fail("Failed to read RDBMS");
       }
+
     }
     assertTrue(tableFound);
   }

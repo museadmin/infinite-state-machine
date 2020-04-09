@@ -1,8 +1,8 @@
 package com.github.museadmin.infinite_state_machine.unit.tests.core;
 
+import com.github.museadmin.infinite_state_machine.ism.ISMTestHelpers;
 import com.github.museadmin.infinite_state_machine.ism.InfiniteStateMachine;
 import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
-import com.github.museadmin.infinite_state_machine.ism.ISMTestActionPack;
 import com.github.museadmin.infinite_state_machine.unit.tests.support.TestSupportMethods;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -51,20 +51,14 @@ public class TestInfiniteStateMachine extends TestSupportMethods {
 
   @Test
   public void testInfiniteStateMachineImportsUnqualifiedProperties() {
-    InfiniteStateMachine ism = new InfiniteStateMachine("db_test.properties");
-    assertEquals(ism.getRdbms(), "sqlite3");
+    InfiniteStateMachine ism = new InfiniteStateMachine("infinite_state_machine.properties");
+    assertTrue(ISMTestHelpers.dbTypes.contains(ism.getRdbms()));
   }
 
   @Test
   public void testInfiniteStateMachineImportsDefaultProperties1() {
     InfiniteStateMachine ism = new InfiniteStateMachine("");
-    assertEquals(ism.getRdbms(), "sqlite3");
-  }
-
-    @Test
-  public void testIsmImportsTestActionPack() {
-    ISMTestActionPack ismTestActionPack = new ISMTestActionPack();
-    infiniteStateMachine.importActionPack(ismTestActionPack);
+    assertTrue(ISMTestHelpers.dbTypes.contains(ism.getRdbms()));
   }
 
 }
