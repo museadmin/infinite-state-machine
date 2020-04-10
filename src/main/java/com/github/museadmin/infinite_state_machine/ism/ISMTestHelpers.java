@@ -27,7 +27,7 @@ public class ISMTestHelpers extends RunState {
   /**
    * Return a ist of the tables in the database
    *
-   * @return ArraList <JSONObject>
+   * @return ArrayListxx of DB tables
    */
   public ArrayList<JSONObject> getDbTables() {
     ArrayList <JSONObject> result;
