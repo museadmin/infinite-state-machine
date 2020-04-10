@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +29,14 @@ public class TestDAL extends TestSupportMethods {
     ISMCoreActionPack ismCoreActionPack = new ISMCoreActionPack();
     infiniteStateMachine = new InfiniteStateMachine("infinite_state_machine.properties");
     infiniteStateMachine.importActionPack(ismCoreActionPack);
+  }
+
+  @After
+  public void tearDown(){
+    if (infiniteStateMachine.propertyCache.getProperty("dropDb").equals("true")) {
+      printDropMessage(infiniteStateMachine);
+      infiniteStateMachine.dataAccessLayer.dropDatabase();
+    }
   }
 
   @Test

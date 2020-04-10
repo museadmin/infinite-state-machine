@@ -4,6 +4,7 @@ import com.github.museadmin.infinite_state_machine.ism.InfiniteStateMachine;
 import com.github.museadmin.infinite_state_machine.core.action_pack.ISMCoreActionPack;
 import com.github.museadmin.infinite_state_machine.unit.tests.support.TestSupportMethods;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +33,14 @@ public class TestMessagingFramework extends TestSupportMethods {
     ismCoreActionPack = new ISMCoreActionPack();
     infiniteStateMachine = new InfiniteStateMachine(PROPERTIES);
     infiniteStateMachine.importActionPack(ismCoreActionPack);
+  }
+
+  @After
+  public void tearDown(){
+    if (infiniteStateMachine.propertyCache.getProperty("dropDb").equals("true")) {
+      printDropMessage(infiniteStateMachine);
+      infiniteStateMachine.dataAccessLayer.dropDatabase();
+    }
   }
 
   @Test

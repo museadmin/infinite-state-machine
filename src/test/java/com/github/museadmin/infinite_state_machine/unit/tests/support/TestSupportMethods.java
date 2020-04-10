@@ -160,6 +160,20 @@ public class TestSupportMethods {
   }
 
   /**
+   * Print a message that the database is being dropped
+   *
+   * @param ism The infinite_state_machine in use
+   */
+  public void printDropMessage(InfiniteStateMachine ism) {
+    System.out.println(
+        String.format(
+            "dropping database %s",
+            ism.propertyCache.getProperty("dbName")
+        )
+    );
+  }
+
+  /**
    * Write a message to file
    * @param message JSON String contains message
    * @param fileName Name of the test file

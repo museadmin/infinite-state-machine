@@ -3,10 +3,7 @@ package com.github.museadmin.infinite_state_machine.unit.tests.core;
 import com.github.museadmin.infinite_state_machine.common.lib.PropertyCache;
 import com.github.museadmin.infinite_state_machine.ism.ISMTestHelpers;
 import com.github.museadmin.infinite_state_machine.unit.tests.support.TestSupportMethods;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.net.URL;
